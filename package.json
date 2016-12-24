@@ -1,0 +1,36 @@
+{
+  "name": "invalid-login-redirect",
+  "title": "Invalid Login Redirect",
+  "version": "0.0.1-alpha",
+  "description": "Limit the number of invalid logins and then redirect the user to a custom page.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/EvanHerman/Timeline-Express/issues"
+  },
+  "author": "Code Parrots",
+  "site": "https://www.wp-timelineexpress.com",
+  "license": "GPLv2",
+  "dependencies": {
+    "grunt": "^0.4.5"
+  },
+  "devDependencies": {
+    "autoprefixer-core": "^5.2.1",
+    "cssjanus": "^1.1.2",
+    "grunt-auto-install": "^0.2.4",
+    "grunt-banner": "^0.6.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-cssmin": "^0.12.3",
+    "grunt-contrib-uglify": "^0.9.1",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-cssjanus": "^0.3.2",
+    "grunt-po2mo": "^0.1.2",
+    "grunt-postcss": "^0.5.0",
+    "grunt-replace": "^1.0.1",
+    "grunt-text-replace": "^0.4.0",
+    "grunt-wp-deploy": "^1.2.0",
+    "grunt-wp-i18n": "^0.5.4"
+  }
+}

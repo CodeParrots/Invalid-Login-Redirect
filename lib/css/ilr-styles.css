@@ -1,0 +1,23 @@
+/**
+ * Invalid Login Redirect Styles
+ * Front-End
+ */
+.ilr_message {
+	border-left: 4px solid transparent;
+	padding: 12px;
+	margin-left: 0;
+	background-color: #fff;
+	box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+	margin-bottom: 10px;
+}
+
+	.ilr_message.error {
+		border-color: #dc3232;
+	}
+
+	.ilr_message img {
+		display: block;
+		width: 100%;
+		max-width: 100%;
+	}
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImlsci1zdHlsZXMuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7R0FHRztBQUNIO0NBQ0MsbUNBQW1DO0NBQ25DLGNBQWM7Q0FDZCxlQUFlO0NBQ2YsdUJBQXVCO0NBRXZCLHVDQUF1QztDQUN2QyxvQkFBb0I7Q0FDcEI7O0NBRUE7RUFDQyxzQkFBc0I7RUFDdEI7O0NBRUQ7RUFDQyxlQUFlO0VBQ2YsWUFBWTtFQUNaLGdCQUFnQjtFQUNoQiIsImZpbGUiOiJpbHItc3R5bGVzLmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogSW52YWxpZCBMb2dpbiBSZWRpcmVjdCBTdHlsZXNcbiAqIEZyb250LUVuZFxuICovXG4uaWxyX21lc3NhZ2Uge1xuXHRib3JkZXItbGVmdDogNHB4IHNvbGlkIHRyYW5zcGFyZW50O1xuXHRwYWRkaW5nOiAxMnB4O1xuXHRtYXJnaW4tbGVmdDogMDtcblx0YmFja2dyb3VuZC1jb2xvcjogI2ZmZjtcblx0LXdlYmtpdC1ib3gtc2hhZG93OiAwIDFweCAxcHggMCByZ2JhKDAsMCwwLC4xKTtcblx0Ym94LXNoYWRvdzogMCAxcHggMXB4IDAgcmdiYSgwLDAsMCwuMSk7XG5cdG1hcmdpbi1ib3R0b206IDEwcHg7XG59XG5cblx0Lmlscl9tZXNzYWdlLmVycm9yIHtcblx0XHRib3JkZXItY29sb3I6ICNkYzMyMzI7XG5cdH1cblxuXHQuaWxyX21lc3NhZ2UgaW1nIHtcblx0XHRkaXNwbGF5OiBibG9jaztcblx0XHR3aWR0aDogMTAwJTtcblx0XHRtYXgtd2lkdGg6IDEwMCU7XG5cdH1cbiJdfQ== */
