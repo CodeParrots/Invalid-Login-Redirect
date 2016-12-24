@@ -39,6 +39,10 @@ Each option is individually filtered, allowing you to override them as needed.
 - `ilr_error_text` - The error text that is displayed back to the user on the redirection landing page. (Note: Will only display messages above `wp_login_form()`)
 - `ilr_error_text_color` - The left border of the message displayed on redirection.
 
+**Other Filters**
+- `ilr_reset_user_key`
+- `ilr_redirect_query_args`
+
 **Transient**
 - `ilr_transient_duration` - The length of time that the login attempt is stored for each user. By default, the login transients are stored in the database for 1 hour.
 

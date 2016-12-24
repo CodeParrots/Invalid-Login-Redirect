@@ -31,18 +31,28 @@ final class Invalid_Login_Redirect {
 
 	private $version;
 
+	private $reset_user_key;
+
 	private $options;
+
+	private $script_suffix;
+
+	private static $user_data;
 
 	public function __construct() {
 
 		$this->version = '0.0.1-alpha';
 
+		$this->reset_user_key = apply_filters( 'ilr_reset_user_key', 'reset_user' );
+
 		$this->options = get_option( 'invalid-login-redirect', [
-			'login_limit'      => 3,
-			'redirect_url'     => site_url( 'wp-login.php?action=lostpassword' ),
-			'error_text'       => esc_html__( 'You have tried to login unsuccessfully 3 times. Have you forgotten your password?', 'invalid-login-redirect' ),
-			'error_text_color' => '#dc3232',
+			'login_limit'       => 3,
+			'redirect_url'      => site_url( 'wp-login.php?action=lostpassword' ),
+			'error_text'        => esc_html__( 'You have tried to login unsuccessfully 3 times. Have you forgotten your password?', 'invalid-login-redirect' ),
+			'error_text_border' => '#dc3232',
 		] );
+
+		$this->script_suffix = ( is_rtl() ? '-rtl' : '' ) . ( WP_DEBUG ? '' : '.min' );
 
 		foreach ( $this->options as $name => $value ) {
 
@@ -56,58 +66,39 @@ final class Invalid_Login_Redirect {
 
 		require_once( plugin_dir_path( __FILE__ ) . '/lib/options.php' );
 
-		new Invalid_Login_Redirect_Settings( $this->options, $this->version );
-
-		add_action( 'login_head', [ $this, 'check_invalid_login' ], 20 );
-
-		add_action( 'ilr_invalid_login', [ $this, 'invalid_login_handler' ], 10, 2 );
-
-		add_action( 'wp_login', [ $this, 'clear_login_transients' ], 10, 2 );
-
-		if ( $this->username = filter_input( INPUT_GET, 'ilr_reset', FILTER_SANITIZE_STRING ) ) {
-
-			add_action( 'login_enqueue_scripts', [ $this, 'ilr_login_styles' ] );
-
-			add_filter( 'login_message', [ $this, 'generate_too_many_attempts_notice' ] );
-
-		}
+		new Invalid_Login_Redirect_Settings( $this->options, $this->version, $this->script_suffix );
 
 		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), [ $this, 'ilr_plugin_action_links' ] );
+
+		add_action( 'wp_login_failed',       [ $this, 'failed_login_attempt' ] );
+
+		add_action( 'ilr_invalid_login',     [ $this, 'handle_invalid_login' ], 10, 2 );
+
+		add_action( 'wp_login',              [ $this, 'clear_invalid_login_transients' ], 10, 2 );
+
+		add_action( 'login_enqueue_scripts', [ $this, 'ilr_login_styles' ] );
+
+		add_filter( 'login_message',         [ $this, 'generate_too_many_attempts_notice' ] );
 
 	}
 
 	/**
-	 * Check for invalid login and store username
+	 * Failed login attempt
 	 *
 	 * @return null
 	 *
 	 * @since 0.0.1
 	 */
-	public function check_invalid_login() {
+	public function failed_login_attempt( $username ) {
 
-		$user_name = filter_input( INPUT_POST, 'log', FILTER_SANITIZE_STRING );
-		$password  = filter_input( INPUT_POST, 'pwd', FILTER_SANITIZE_STRING );
+		self::$user_data = $this->get_login_user_data( $username );
 
-		if ( ! $user_name || ! $password ) {
-
-			return;
-
-		}
-
-		$this->username = sanitize_text_field( sanitize_title( $user_name ) );
-
-		$user = apply_filters( 'authenticate', null, $user_name, $password );
-
-		if ( is_wp_error( $user ) ) {
-
-			/**
-			 * Trigger an invalid login
-			 *
-			 * @hooked invalid_login_handler - 10
-			 */
-			do_action( 'ilr_invalid_login', $this->username, $user );
-
-		}
+		/**
+		 * Trigger an invalid login
+		 *
+		 * @hooked handle_invalid_login - 10
+		 */
+		do_action( 'ilr_invalid_login', $username, $_POST );
 
 	}
 
@@ -120,43 +111,26 @@ final class Invalid_Login_Redirect {
 	 *
 	 * @since 0.0.1
 	 */
-	public function invalid_login_handler( $username, $error_obj ) {
+	public function handle_invalid_login( $username, $login_data ) {
 
-		if ( ! $username ) {
+		$error_obj = apply_filters( 'authenticate', null, $username, $login_data['pwd'] );
+		$attempts  = $this->log_invalid_login_attempt( $username );
+
+		if (
+			'invalid_username' === key( $error_obj->errors ) ||
+			! $attempts ||
+			$this->options['login_limit'] > $attempts
+		) {
 
 			return;
 
 		}
 
-		if ( false === ( $login_transient = get_transient( "invalid_login_{$username}" ) ) ) {
+		delete_transient( 'invalid_login_' . self::$user_data->ID );
 
-			$this->log_invalid_login_attempt( $username );
+		wp_redirect( esc_url_raw( $this->build_redirect_url( $username ) ) );
 
-			return;
-
-		}
-
-		$transient_data = json_decode( $login_transient, true );
-
-		$attempt = (int) $transient_data['attempts'] + 1;
-
-		if ( $this->options['login_limit'] <= $attempt ) {
-
-			set_transient( "password_reset_{$username}", 1, 1 * MINUTE_IN_SECONDS );
-
-			delete_transient( "invalid_login_{$username}" );
-
-			$redirect_url = ( site_url( 'wp-login.php?action=lostpassword' ) === $this->options['redirect_url'] ) ? add_query_arg( [
-				'ilr_reset' => $username,
-			], $this->options['redirect_url'] ) : $this->options['redirect_url'];
-
-			wp_redirect( esc_url_raw( $redirect_url ) );
-
-			exit;
-
-		}
-
-		$this->log_invalid_login_attempt( $username, $attempt );
+		exit;
 
 	}
 
@@ -169,19 +143,16 @@ final class Invalid_Login_Redirect {
 	 */
 	public function ilr_login_styles() {
 
-		if ( ! get_transient( "password_reset_{$this->username}" ) ) {
+		if ( ! isset( $_GET[ $this->reset_user_key ] ) ) {
 
-			wp_redirect( $this->options['redirect_url'] );
+			return;
 
 		}
 
-		$rtl = is_rtl() ? '-rtl' : '';
-		$min = WP_DEBUG ? '' : '.min';
-
-		wp_enqueue_style( 'ilr-login-style', plugin_dir_url( __FILE__ ) . "/lib/css/ilr-styles{$rtl}{$min}.css", array(), $this->version );
+		wp_enqueue_style( 'ilr-login-style', plugin_dir_url( __FILE__ ) . "/lib/css/ilr-styles{$this->script_suffix}.css", [], $this->version );
 
 		wp_add_inline_style( 'ilr-login-style', ".ilr_message.error {
-			border-color: {$this->options['error_text_color']};
+			border-color: {$this->options['error_text_border']};
 		}" );
 
 	}
@@ -197,23 +168,21 @@ final class Invalid_Login_Redirect {
 	 */
 	public function generate_too_many_attempts_notice( $message ) {
 
-		if ( get_transient( "password_reset_{$this->username}" ) ) {
+		$username = filter_input( INPUT_GET, $this->reset_user_key, FILTER_SANITIZE_STRING );
 
-			delete_transient( "password_reset_{$this->username}" );
+		if ( ! $username || empty( $this->options['error_text'] ) ) {
 
-			$_POST['user_login'] = $this->username;
-
-			$error_text = str_replace( '{attempts}', $this->options['login_limit'], $this->options['error_text'] );
-
-			$message = sprintf(
-				'<div class="ilr_message error">%1$s</div>%2$s',
-				apply_filters( 'the_content', $error_text ),
-				$message
-			);
+			return $message;
 
 		}
 
-		return $message;
+		$_POST['user_login'] = $username;
+
+		return sprintf(
+			'<div class="ilr_message error">%1$s</div>%2$s',
+			apply_filters( 'the_content', str_replace( '{attempts}', $this->options['login_limit'], $this->options['error_text'] ) ),
+			$message
+		);
 
 	}
 
@@ -239,6 +208,29 @@ final class Invalid_Login_Redirect {
 	}
 
 	/**
+	 * Generate the redirect URL
+	 *
+	 * @return string
+	 *
+	 * @since 0.0.1
+	 */
+	public function build_redirect_url( $username = false ) {
+
+		if ( $username && site_url( 'wp-login.php?action=lostpassword' ) === $this->options['redirect_url'] ) {
+
+			$query_args = apply_filters( 'ilr_redirect_query_args', [
+				$this->reset_user_key => $username,
+			] );
+
+			return add_query_arg( $query_args, $this->options['redirect_url'] );
+
+		}
+
+		return $this->options['redirect_url'];
+
+	}
+
+	/**
 	 * Clear the login transients for the user after a successful login
 	 *
 	 * @param  string $username    The username
@@ -248,34 +240,63 @@ final class Invalid_Login_Redirect {
 	 *
 	 * @since 0.0.1
 	 */
-	public function clear_login_transients( $username, $user_object ) {
+	public function clear_invalid_login_transients( $username, $user_object ) {
 
-		delete_transient( "invalid_login_{$username}" );
+		delete_transient( "invalid_login_{$user_object->ID}" );
 
 	}
 
 	/**
-	 * Set or update the invalid login attempt transient
+	 * Log an invalid login attempt, update user meta
 	 *
-	 * @param  string  $username The username attempting to login
-	 * @param  integer $attempt  Attempt number
+	 * @param  string  $username The username used to login
 	 *
-	 * @return bool
-	 *
-	 * @since 0.0.1
+	 * @return int
 	 */
-	public function log_invalid_login_attempt( $username, $attempt = 1 ) {
+	public function log_invalid_login_attempt( $username ) {
 
-		if ( ! $username ) {
+		if ( ! self::$user_data ) {
 
-			return;
+			return false;
 
 		}
 
-		set_transient( "invalid_login_{$username}", json_encode( [
-			'username' => $username,
-			'attempts' => (int) $attempt,
-		] ), apply_filters( 'ilr_transient_duration', 1 * HOUR_IN_SECONDS ) );
+		$user_id = self::$user_data->ID;
+
+		if ( false === ( $attempts = get_transient( "invalid_login_{$user_id}" ) ) ) {
+
+			$attempt = 1;
+
+		}
+
+		$attempt = isset( $attempt ) ? $attempt : (int) $attempts + 1;
+
+		set_transient(
+			"invalid_login_{$user_id}",
+			$attempt,
+			apply_filters( 'ilr_transient_duration', 1 * HOUR_IN_SECONDS )
+		);
+
+		return absint( $attempt );
+
+	}
+
+	/**
+	 * Return the user object
+	 *
+	 * @param  string $username The username/email to retreive
+	 *
+	 * @return array
+	 */
+	public function get_login_user_data( $username ) {
+
+		if ( empty( $user_obj = get_user_by( ( is_email( $username ) ? 'email' : 'login' ), $username ) ) ) {
+
+			return false;
+
+		}
+
+		return $user_obj;
 
 	}
 

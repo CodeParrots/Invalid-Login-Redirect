@@ -1,15 +1,31 @@
 <?php
-
+/**
+ * Invalid Login Redirect Settings
+ *
+ * @since 0.0.1
+ */
 class Invalid_Login_Redirect_Settings {
 
 	private $options;
 
 	private $version;
 
-	public function __construct( $options, $version ) {
+	private $style_suffix;
 
-		$this->options = $options;
-		$this->version = $version;
+	private $script_suffix;
+
+	public function __construct( $options, $version, $suffix ) {
+
+		if ( ! is_admin() ) {
+
+			return;
+
+		}
+
+		$this->options        = $options;
+		$this->version        = $version;
+		$this->style_suffix   = $suffix;
+		$this->script_suffix  = WP_DEBUG ? '' : '.min';
 
 		add_action( 'admin_menu', [ $this, 'add_plugin_page' ] );
 
@@ -44,17 +60,14 @@ class Invalid_Login_Redirect_Settings {
 	*/
 	public function create_admin_page() {
 
-		$rtl = is_rtl() ? '-rtl' : '';
-		$min = WP_DEBUG ? '' : '.min';
-
-		wp_enqueue_style( 'ilr-admin', plugin_dir_url( __FILE__ ) . "/css/ilr-admin{$rtl}{$min}.css" );
+		wp_enqueue_style( 'ilr-admin', plugin_dir_url( __FILE__ ) . "/css/ilr-admin{$this->style_suffix}.css" );
 
 		wp_enqueue_style( 'wp-color-picker' );
 
-		wp_enqueue_script( 'ilr-admin', plugin_dir_url( __FILE__ ) . "/js/ilr-admin{$min}.js", array( 'wp-color-picker' ), true, $this->version );
+		wp_enqueue_script( 'ilr-admin', plugin_dir_url( __FILE__ ) . "/js/ilr-admin{$script_suffix}.js", array( 'wp-color-picker' ), true, $this->version );
 
 		wp_add_inline_style( 'ilr-admin', ".ilr_message.invalid {
-			border-color: {$this->options['error_text_color']};
+			border-color: {$this->options['error_text_border']};
 		}" );
 
 		?>
@@ -127,9 +140,9 @@ class Invalid_Login_Redirect_Settings {
 		);
 
 		add_settings_field(
-			'error_text_color',
+			'error_text_border',
 			__( 'Error Text Border Color', 'invalid-login-redirect' ),
-			[ $this, 'error_text_color_callback' ],
+			[ $this, 'error_text_border_callback' ],
 			'invalid-login-redirect',
 			'invalid_login_redirect_section'
 		);
@@ -160,7 +173,7 @@ class Invalid_Login_Redirect_Settings {
 		$new_input['redirect_url']     = ! empty( $input['redirect_url'] ) ? sanitize_url( $input['redirect_url'] ) : site_url( 'wp-login.php?action=lostpassword' );
 		$new_input['login_limit']      = ! empty( $input['login_limit'] ) ? absint( $input['login_limit'] ) : $this->options['login_limit'];
 		$new_input['error_text']       = isset( $input['error_text'] ) ? trim( $input['error_text'] ) : $this->options['error_text'];
-		$new_input['error_text_color'] = isset( $input['error_text_color'] ) ? sanitize_text_field( $input['error_text_color'] ) : $this->options['error_text_color'];
+		$new_input['error_text_border'] = isset( $input['error_text_border'] ) ? sanitize_text_field( $input['error_text_border'] ) : $this->options['error_text_border'];
 
 		return $new_input;
 
@@ -260,11 +273,11 @@ class Invalid_Login_Redirect_Settings {
 	*
 	* @since 0.0.1
 	*/
-	public function error_text_color_callback() {
+	public function error_text_border_callback() {
 
 		printf(
-			'<input type="text" name="invalid-login-redirect[error_text_color]" value="%1$s" class="js_error_text_color" data-default-color="%1$s" /><p class="description">%2$s</p>',
-			$this->options['error_text_color'],
+			'<input type="text" name="invalid-login-redirect[error_text_border]" value="%1$s" class="js_error_text_border" data-default-color="%1$s" /><p class="description">%2$s</p>',
+			$this->options['error_text_border'],
 			sprintf(
 				esc_html__( 'Enter the text that will appear back to the user on the lost password page. You can use %s as a placeholder to display the number of attempts in your message.', 'invalid-login-redirect' ),
 				'<code><strong>{attempts}</strong></code>'
