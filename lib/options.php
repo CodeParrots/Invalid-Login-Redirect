@@ -64,7 +64,7 @@ class Invalid_Login_Redirect_Settings {
 
 		wp_enqueue_style( 'wp-color-picker' );
 
-		wp_enqueue_script( 'ilr-admin', plugin_dir_url( __FILE__ ) . "/js/ilr-admin{$script_suffix}.js", array( 'wp-color-picker' ), true, $this->version );
+		wp_enqueue_script( 'ilr-admin', plugin_dir_url( __FILE__ ) . "/js/ilr-admin{$this->script_suffix}.js", array( 'wp-color-picker' ), true, $this->version );
 
 		wp_add_inline_style( 'ilr-admin', ".ilr_message.invalid {
 			border-color: {$this->options['error_text_border']};
