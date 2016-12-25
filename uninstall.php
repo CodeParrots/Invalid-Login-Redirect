@@ -16,8 +16,8 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 global $wpdb;
 
 $wpdb->query(
-	"
-	DELETE $wpdb->options
-	WHERE option_name LIKE _transient_invalid_login_%
-	"
+	$wpdb->prepare(
+		'DELETE FROM ' . $wpdb->options . ' WHERE option_name LIKE "%s"',
+		$wpdb->esc_like( '_transient_invalid_login_' ) . '%'
+	)
 );
