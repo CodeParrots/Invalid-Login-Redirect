@@ -412,8 +412,8 @@ class Invalid_Login_Redirect_Settings {
 							'<div class="row">
 								%1$s
 								<div class="checkbox-toggle">
-									<input class="tgl tgl-skewed" name="invalid-login-redirect[addons][%2$s][]" id="invalid-login-redirect[addons][%2$s][]" type="checkbox" value="%3$s" checked="checked" />
-									<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][%2$s][]"></label>
+									<input class="tgl tgl-skewed" name="invalid-login-redirect[addons][%2$s][%3$s]" id="invalid-login-redirect[addons][%2$s][%3$s]" type="checkbox" value="1" checked="checked" />
+									<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][%2$s][%3$s]"></label>
 								</div>
 								<p class="description">%4$s</p>
 							</div>',
@@ -469,6 +469,10 @@ class Invalid_Login_Redirect_Settings {
 					__( 'Invalid Passwords', 'invalid-login-redirect' ) => [
 						'id'          => 'invalid_password',
 						'description' => __( 'Log invalid password entries. This will only log entries for registered users who enter invalid passwords.', 'invalid-login-redirect' ),
+					],
+					__( 'Dashboard Widget', 'invalid-login-redirect' ) => [
+						'id'          => 'dashboard_widget',
+						'description' => __( 'This activates the dashboard widget so that users can easily see login attempts as soon as they enter the site.', 'invalid-login-redirect' ),
 					],
 				],
 			],

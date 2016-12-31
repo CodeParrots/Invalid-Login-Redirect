@@ -110,7 +110,7 @@ class Invalid_Login_Redirect {
 			// Temp fix
 			if ( is_array( $addon_file ) ) {
 
-				continue;
+				//continue;
 
 			}
 

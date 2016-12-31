@@ -124,6 +124,10 @@ body.settings_page_invalid-login-redirect .col {
 	animation: appear .3s ease-in-out;
 }
 
+.ilr-notice .sub-options .row {
+	margin: 1em 0;
+}
+
 .ilr-notice .sub-options .row:first-child {
 	padding-top: 1em;
 	margin-top: 1em;
@@ -305,7 +309,7 @@ body.settings_page_invalid-login-redirect .col {
 			line-height: 2em;
 			font-weight: bold;
 			color: #fff;
-			text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4);
+			text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
 		}
 
 		.tgl-skewed + .tgl-btn:after {
