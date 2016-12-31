@@ -392,15 +392,14 @@ class Invalid_Login_Redirect_Settings {
 			}
 
 			printf(
-				'<div class="col %1$s">
+				'<div class="col">
 					<div class="checkbox-toggle">
-						<input class="tgl tgl-skewed" name="invalid-login-redirect[addons][%2$s]" id="invalid-login-redirect[addons][]" type="checkbox" value="%3$s" %4$s />
+						<input class="tgl tgl-skewed" name="invalid-login-redirect[addons][%1$s]" id="invalid-login-redirect[addons][]" type="checkbox" value="%2$s" %3$s />
 						<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][]"></label>
 					</div>
-					<h4>%5$s</h4>
-					<p>%6$s</p>
+					<h3>%4$s</h3>
+					<p class="description">%5$s</p>
 				</div>',
-				esc_attr( "span_{$iteration}_of_4" ),
 				esc_attr( sanitize_title( $addon_name ) ),
 				esc_attr( $addon_data['file'] ),
 				checked( array_key_exists( sanitize_title( $addon_name ), $this->options['addons'] ), 1, false ),

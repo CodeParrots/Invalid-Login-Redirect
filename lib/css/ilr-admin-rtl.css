@@ -66,7 +66,8 @@ body.settings_page_invalid-login-redirect div#wpcontent {
 		}
 
 .ilr-option-container,
-.ilr-settings-container .form-table tr {
+.ilr-settings-container .form-table tr,
+body.settings_page_invalid-login-redirect .col {
 	background: white;
 	color: #87a6bc;
 	box-shadow: 0 0 0 1px rgba(200, 215, 225, 0.5), 0 1px 2px #e9eff3;
@@ -92,6 +93,10 @@ body.settings_page_invalid-login-redirect div#wpcontent {
 		margin-bottom: 50px;
 	}
 
+	.ilr-settings-container .form-table td {
+		width: 100%;
+	}
+
 	.ilr-settings-container .form-table tr th {
 		position: absolute;
 		top: -3em;
@@ -99,7 +104,15 @@ body.settings_page_invalid-login-redirect div#wpcontent {
 		font-size: 15px;
 	}
 
-.ilr-notice {
+.ilr-settings-container .add-ons .form-table tr,
+.ilr-settings-container .add-ons .form-table td {
+	padding: 0;
+	box-shadow: none;
+	background: transparent;
+}
+
+.ilr-notice,
+body.settings_page_invalid-login-redirect .col {
 	position: relative;
 	margin-bottom: 24px;
 	border-radius: 1px;
@@ -267,9 +280,8 @@ body.settings_page_invalid-login-redirect div#wpcontent {
 		backface-visibility: hidden;
 		transition: all .2s ease;
 		font-family: sans-serif;
-		background: #888;
+		background: #ff7f7f;
 		float: left;
-		margin-top: 10px;
 	}
 
 		.tgl-skewed + .tgl-btn:after,
@@ -349,11 +361,14 @@ body.settings_page_invalid-login-redirect div#wpcontent {
 		-moz-box-sizing:border-box;
 		-webkit-box-sizing:border-box;
 		-ms-box-sizing:border-box;
-		padding: .5em 1.25em 1.25em 1.25em;
 		border: 1px solid #fafafa;
 		background: #fff;
-		box-shadow: 0px 3px 15px rgba(0,0,0,0.1);
 	}
+
+		body.settings_page_invalid-login-redirect .col h3 {
+			margin: 0;
+			color: #87a6bc;
+		}
 
 		body.settings_page_invalid-login-redirect .group:first-child .col {
 			margin-top: 0;
