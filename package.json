@@ -1,7 +1,7 @@
 {
   "name": "invalid-login-redirect",
   "title": "Invalid Login Redirect",
-  "version": "0.0.1-alpha",
+  "version": "1.0.0",
   "description": "Limit the number of invalid logins and then redirect the user to a custom page.",
   "main": "index.js",
   "scripts": {

@@ -4,7 +4,7 @@
  Plugin Name: Invalid Login Redirect
  Plugin URI: http://www.codeparrots.com
  Description: Redirect users to a specific page after a specified number of invalid login attempts.
- Version: 0.0.1
+ Version: 1.0.0
  Author: Code Parrots
  Text Domain: invalid-login-redirect
  Author URI: http://www.codeparrots.com
@@ -27,7 +27,7 @@
  #_________________________________________________ CONSTANTS
 **/
 
-final class Invalid_Login_Redirect {
+class Invalid_Login_Redirect {
 
 	private $version;
 
@@ -41,7 +41,7 @@ final class Invalid_Login_Redirect {
 
 	public function __construct() {
 
-		$this->version = '0.0.1-alpha';
+		$this->version = '1.0.0';
 
 		$this->reset_user_key = apply_filters( 'ilr_reset_user_key', 'reset_user' );
 
@@ -50,6 +50,7 @@ final class Invalid_Login_Redirect {
 			'redirect_url'      => site_url( 'wp-login.php?action=lostpassword' ),
 			'error_text'        => esc_html__( 'You have tried to login unsuccessfully 3 times. Have you forgotten your password?', 'invalid-login-redirect' ),
 			'error_text_border' => '#dc3232',
+			'addons'            => [],
 		] );
 
 		$this->script_suffix = ( is_rtl() ? '-rtl' : '' ) . ( WP_DEBUG ? '' : '.min' );
@@ -64,11 +65,23 @@ final class Invalid_Login_Redirect {
 
 		}
 
+		if ( ! defined( 'ILR_MODULES' ) ) {
+
+			define( 'ILR_MODULES', plugin_dir_path( __FILE__ ) . 'modules/' );
+
+		}
+
+		if ( ! defined( 'ILR_IMAGES' ) ) {
+
+			define( 'ILR_IMAGES', plugin_dir_url( __FILE__ ) . 'lib/images/' );
+
+		}
+
 		require_once( plugin_dir_path( __FILE__ ) . '/lib/options.php' );
 
 		new Invalid_Login_Redirect_Settings( $this->options, $this->version, $this->script_suffix );
 
-		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), [ $this, 'ilr_plugin_action_links' ] );
+		add_action( 'init', [ $this, 'instantiate_addons' ] );
 
 		add_action( 'wp_login_failed',       [ $this, 'failed_login_attempt' ] );
 
@@ -79,6 +92,24 @@ final class Invalid_Login_Redirect {
 		add_action( 'login_enqueue_scripts', [ $this, 'ilr_login_styles' ] );
 
 		add_filter( 'login_message',         [ $this, 'generate_too_many_attempts_notice' ] );
+
+		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), [ $this, 'ilr_plugin_action_links' ] );
+
+	}
+
+	public function instantiate_addons() {
+
+		if ( empty( $this->options['addons'] ) ) {
+
+			return;
+
+		}
+
+		foreach ( $this->options['addons'] as $addon_name => $addon_file ) {
+
+			include_once( ILR_MODULES . $addon_file );
+
+		}
 
 	}
 
@@ -257,7 +288,7 @@ final class Invalid_Login_Redirect {
 
 		if ( ! self::$user_data ) {
 
-			return false;
+			return;
 
 		}
 
@@ -292,7 +323,7 @@ final class Invalid_Login_Redirect {
 
 		if ( empty( $user_obj = get_user_by( ( is_email( $username ) ? 'email' : 'login' ), $username ) ) ) {
 
-			return false;
+			return;
 
 		}
 

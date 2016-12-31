@@ -14,6 +14,8 @@ class Invalid_Login_Redirect_Settings {
 
 	private $script_suffix;
 
+	private $tab;
+
 	public function __construct( $options, $version, $suffix ) {
 
 		if ( ! is_admin() ) {
@@ -26,6 +28,7 @@ class Invalid_Login_Redirect_Settings {
 		$this->version        = $version;
 		$this->style_suffix   = $suffix;
 		$this->script_suffix  = WP_DEBUG ? '' : '.min';
+		$this->tab            = filter_input( INPUT_GET, 'tab', FILTER_SANITIZE_STRING );
 
 		add_action( 'admin_menu', [ $this, 'add_plugin_page' ] );
 
@@ -72,23 +75,60 @@ class Invalid_Login_Redirect_Settings {
 
 		?>
 
+		<div class="ilr-banner">
+
+			<div class="inner-container">
+
+				<div class="logo-container">
+
+					<a class="logo-link"><img src="<?php echo ILR_IMAGES . 'logo.png'; ?>" class="logo" /></a>
+
+				</div>
+
+				<ul class="links">
+					<li><a href="#">Need Help?</a></li>
+					<li><a href="#">Leave a Review</a></li>
+				</ul>
+
+			</div>
+
+		</div>
+
 		<div class="wrap">
 
-			<h1><?php esc_html_e( 'Invalid Login Redirect Options', 'invalid-login-redirect' ); ?> <small style="float:right; font-weight:200; font-size:10px;"><em><?php printf( esc_html_x( 'version %s', 'plugin version number', 'invalid-login-redirect' ), $this->version ); ?></em></small></h1>
+			<div class="ilr-settings-container">
 
-			<form method="post" action="options.php">
+				<form method="post" action="options.php">
 
-				<?php
+					<?php
 
-					settings_fields( 'ilr_options' );
+						settings_fields( 'ilr_options' );
 
-					do_settings_sections( 'invalid-login-redirect' );
+						$this->print_options_nav();
 
-					submit_button();
+						?>
 
-				?>
+						<div class="general add-on <?php if ( $this->tab && 'general' !== $this->tab ) { echo 'hidden'; } ?>">
 
-			</form>
+							<?php do_settings_sections( 'invalid-login-redirect' ); ?>
+
+						</div>
+
+						<div class="add-ons add-on <?php if ( ( $this->tab && 'add-ons' !== $this->tab ) || ! $this->tab ) { echo 'hidden'; } ?>">
+
+							<?php do_settings_sections( 'invalid-login-redirect-addons' ); ?>
+
+						</div>
+
+						<?php
+
+						submit_button();
+
+					?>
+
+				</form>
+
+			</div>
 
 		</div>
 
@@ -111,7 +151,7 @@ class Invalid_Login_Redirect_Settings {
 		add_settings_section(
 			'invalid_login_redirect_section',
 			'',
-			[ $this, 'print_section_info' ],
+			false,
 			'invalid-login-redirect'
 		);
 
@@ -155,6 +195,27 @@ class Invalid_Login_Redirect_Settings {
 			'invalid_login_redirect_section'
 		);
 
+		register_setting(
+			'ilr_options_addons',
+			'invalid-login-redirect-addons',
+			[ $this, 'sanitize' ]
+		);
+
+		add_settings_section(
+			'invalid_login_redirect_addons_section',
+			'',
+			false,
+			'invalid-login-redirect-addons'
+		);
+
+		add_settings_field(
+			'ilr_addons',
+			__( 'Add-Ons', 'invalid-login-redirect' ),
+			[ $this, 'ilr_addons_callback' ],
+			'invalid-login-redirect-addons',
+			'invalid_login_redirect_addons_section'
+		);
+
 	}
 
 	/**
@@ -170,27 +231,36 @@ class Invalid_Login_Redirect_Settings {
 
 		$new_input = [];
 
-		$new_input['redirect_url']     = ! empty( $input['redirect_url'] ) ? sanitize_url( $input['redirect_url'] ) : site_url( 'wp-login.php?action=lostpassword' );
-		$new_input['login_limit']      = ! empty( $input['login_limit'] ) ? absint( $input['login_limit'] ) : $this->options['login_limit'];
-		$new_input['error_text']       = isset( $input['error_text'] ) ? trim( $input['error_text'] ) : $this->options['error_text'];
+		$new_input['redirect_url']      = ! empty( $input['redirect_url'] ) ? sanitize_url( $input['redirect_url'] ) : site_url( 'wp-login.php?action=lostpassword' );
+		$new_input['login_limit']       = ! empty( $input['login_limit'] ) ? absint( $input['login_limit'] ) : $this->options['login_limit'];
+		$new_input['error_text']        = isset( $input['error_text'] ) ? trim( $input['error_text'] ) : $this->options['error_text'];
 		$new_input['error_text_border'] = isset( $input['error_text_border'] ) ? sanitize_text_field( $input['error_text_border'] ) : $this->options['error_text_border'];
+		$new_input['addons']            = isset( $input['addons'] ) ? (array) $input['addons'] : [];
 
 		return $new_input;
 
 	}
 
 	/**
-	* Print the Section text
+	* Print the options navigation
 	*
 	* @return mixed
 	*
 	* @since 0.0.1
 	*/
-	public function print_section_info() {
+	public function print_options_nav() {
 
 		printf(
-			'<p class="description">%s</p>',
-			esc_html__( 'Edit the options for the invalid login redirect plugin below.', 'invalid-login-redirect' )
+			'<div class="ilr-notice ilr-navigation">
+				<ul class="nav-tab-list">
+					<li class="%1$s option-nav-tab"><a class="option-tab-link" data-tab="general" href="?page=invalid-login-redirect&tab=general">%2$s</a></li>
+					<li class="%3$s option-nav-tab"><a class="option-tab-link" data-tab="add-ons" href="?page=invalid-login-redirect&tab=add-ons">%4$s</a></li>
+				</ul>
+			</div>',
+			( ( $this->tab && 'general' === $this->tab ) || ! $this->tab ) ? 'is-selected' : '',
+			__( 'General', 'invalid-login-redirect' ),
+			( $this->tab && 'add-ons' === $this->tab ) ? 'is-selected' : '',
+			__( 'Add-Ons', 'invalid-login-redirect' )
 		);
 
 	}
@@ -299,6 +369,73 @@ class Invalid_Login_Redirect_Settings {
 			'<div class="ilr_message invalid">%1$s</div>',
 			apply_filters( 'the_content', str_replace( '{attempts}', $this->options['login_limit'], $this->options['error_text'] ) )
 		);
+
+	}
+
+	/**
+	 * Render the add-ons section
+	 *
+	 * @return mixed
+	 *
+	 * @since 1.0.0
+	 */
+	public function ilr_addons_callback() {
+
+		$iteration = 1;
+
+		foreach ( $this->get_ilr_addons() as $addon_name => $addon_data ) {
+
+			if ( 1 === $iteration ) {
+
+				print( '<div class="section group">' );
+
+			}
+
+			printf(
+				'<div class="col %1$s">
+					<div class="checkbox-toggle">
+						<input class="tgl tgl-skewed" name="invalid-login-redirect[addons][%2$s]" id="invalid-login-redirect[addons][]" type="checkbox" value="%3$s" %4$s />
+						<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][]"></label>
+					</div>
+					<h4>%5$s</h4>
+					<p>%6$s</p>
+				</div>',
+				esc_attr( "span_{$iteration}_of_4" ),
+				esc_attr( sanitize_title( $addon_name ) ),
+				esc_attr( $addon_data['file'] ),
+				checked( array_key_exists( sanitize_title( $addon_name ), $this->options['addons'] ), 1, false ),
+				esc_html( $addon_name ),
+				esc_html( $addon_data['description'] )
+			);
+
+			if ( 4 === $iteration ) {
+
+				print( '</div>' );
+
+			}
+
+			$iteration++;
+
+		}
+
+	}
+
+	/**
+	 * Get the list of add-ons that a user can activate
+	 *
+	 * @return array
+	 *
+	 * @since 1.0.0
+	 */
+	public function get_ilr_addons() {
+
+		return [
+			__( 'Logging', 'invalid-login-redirect' ) => [
+				'banner'      => '',
+				'file'        => 'class-logging.php',
+				'description' => __( 'Start logging each time an invalid user attempts to login.', 'invalid-login-redirect' ),
+			],
+		];
 
 	}
 

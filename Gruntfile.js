@@ -92,8 +92,16 @@ module.exports = function( grunt ) {
 		// watch our project for changes
 		watch: {
 			admin_css: { // admin css
-				files: 'lib/css/*.css',
+				files: [ 'lib/css/*.css' ],
 				tasks: [ 'cssjanus', 'cssmin', 'usebanner' ],
+				options: {
+					spawn: false,
+					event: ['all']
+				},
+			},
+			admin_js: { // admin css
+				files: [ 'lib/js/*.js', 'lib/js/!*.min.js' ],
+				tasks: [ 'uglify', 'usebanner' ],
 				options: {
 					spawn: false,
 					event: ['all']
@@ -156,8 +164,8 @@ module.exports = function( grunt ) {
 						to: "Version: <%= pkg.version %>"
 					},
 					{
-						from: /$this->version = (.*)/,
-						to: "$this->version = <%= pkg.version %>"
+						from: /this->version = (.*)/,
+						to: "this->version = '<%= pkg.version %>';"
 					}
 				]
 			},
