@@ -107,6 +107,13 @@ class Invalid_Login_Redirect {
 
 		foreach ( $this->options['addons'] as $addon_name => $addon_file ) {
 
+			// Temp fix
+			if ( is_array( $addon_file ) ) {
+
+				continue;
+
+			}
+
 			include_once( ILR_MODULES . $addon_file );
 
 		}
@@ -146,6 +153,13 @@ class Invalid_Login_Redirect {
 
 		$error_obj = apply_filters( 'authenticate', null, $username, $login_data['pwd'] );
 		$attempts  = $this->log_invalid_login_attempt( $username );
+
+		/**
+		 * Log an invalid password attempt
+		 *
+		 * @hooked log_invalid_password - 10
+		 */
+		do_action( 'ilr_handle_invalid_login', $username, $attempts, $error_obj, self::$user_data );
 
 		if (
 			'invalid_username' === key( $error_obj->errors ) ||

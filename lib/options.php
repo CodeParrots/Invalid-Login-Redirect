@@ -86,8 +86,8 @@ class Invalid_Login_Redirect_Settings {
 				</div>
 
 				<ul class="links">
-					<li><a href="#">Need Help?</a></li>
-					<li><a href="#">Leave a Review</a></li>
+					<li><a href="#"><?php esc_html_e( 'Need Help?', 'invalid-login-redirect' ); ?></a></li>
+					<li><a href="#"><?php esc_html_e( 'Leave a Review', 'invalid-login-redirect' ); ?></a></li>
 				</ul>
 
 			</div>
@@ -121,6 +121,8 @@ class Invalid_Login_Redirect_Settings {
 						</div>
 
 						<?php
+
+						do_action( 'ilr_options_section', $this->tab );
 
 						submit_button();
 
@@ -195,12 +197,6 @@ class Invalid_Login_Redirect_Settings {
 			'invalid_login_redirect_section'
 		);
 
-		register_setting(
-			'ilr_options_addons',
-			'invalid-login-redirect-addons',
-			[ $this, 'sanitize' ]
-		);
-
 		add_settings_section(
 			'invalid_login_redirect_addons_section',
 			'',
@@ -250,18 +246,39 @@ class Invalid_Login_Redirect_Settings {
 	*/
 	public function print_options_nav() {
 
-		printf(
-			'<div class="ilr-notice ilr-navigation">
-				<ul class="nav-tab-list">
-					<li class="%1$s option-nav-tab"><a class="option-tab-link" data-tab="general" href="?page=invalid-login-redirect&tab=general">%2$s</a></li>
-					<li class="%3$s option-nav-tab"><a class="option-tab-link" data-tab="add-ons" href="?page=invalid-login-redirect&tab=add-ons">%4$s</a></li>
-				</ul>
-			</div>',
-			( ( $this->tab && 'general' === $this->tab ) || ! $this->tab ) ? 'is-selected' : '',
+		$nav_items = apply_filters( 'ilr_options_nav_items', [
 			__( 'General', 'invalid-login-redirect' ),
-			( $this->tab && 'add-ons' === $this->tab ) ? 'is-selected' : '',
-			__( 'Add-Ons', 'invalid-login-redirect' )
-		);
+			__( 'Add-Ons', 'invalid-login-redirect' ),
+		] );
+
+		?>
+
+		<div class="ilr-notice ilr-navigation">
+
+			<ul class="nav-tab-list">
+
+				<?php
+
+				foreach ( $nav_items as $item ) {
+
+					$slug = sanitize_title( $item );
+
+					printf(
+						'<li class="%1$s option-nav-tab"><a class="option-tab-link" data-tab="%2$s" href="?page=invalid-login-redirect&tab=%2$s">%3$s</a></li>',
+						( ( $this->tab && $slug === $this->tab ) || ( ! $this->tab && __( 'General', 'invalid-login-redirect' ) === $item ) ) ? 'is-selected' : '',
+						esc_attr( $slug ),
+						esc_html( $item )
+					);
+
+				}
+
+				?>
+
+			</ul>
+
+		</div>
+
+		<?php
 
 	}
 
@@ -381,39 +398,54 @@ class Invalid_Login_Redirect_Settings {
 	 */
 	public function ilr_addons_callback() {
 
-		$iteration = 1;
-
 		foreach ( $this->get_ilr_addons() as $addon_name => $addon_data ) {
 
-			if ( 1 === $iteration ) {
+			$sub_options = '';
 
-				print( '<div class="section group">' );
+			if ( $addon_data['sub_options'] ) {
+
+				$sub_options .= '<div class="sub-options">';
+
+					foreach ( $addon_data['sub_options'] as $label => $option_data ) {
+
+						$sub_options .= sprintf(
+							'<div class="row">
+								%1$s
+								<div class="checkbox-toggle">
+									<input class="tgl tgl-skewed" name="invalid-login-redirect[addons][%2$s][]" id="invalid-login-redirect[addons][%2$s][]" type="checkbox" value="%3$s" checked="checked" />
+									<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][%2$s][]"></label>
+								</div>
+								<p class="description">%4$s</p>
+							</div>',
+							$label,
+							esc_attr( sanitize_title( $addon_name ) ),
+							esc_attr( $option_data['id'] ),
+							$option_data['description']
+						);
+
+					}
+
+				$sub_options .= '</div>';
 
 			}
 
 			printf(
-				'<div class="col">
+				'<div class="col ilr-notice">
 					<div class="checkbox-toggle">
 						<input class="tgl tgl-skewed" name="invalid-login-redirect[addons][%1$s]" id="invalid-login-redirect[addons][]" type="checkbox" value="%2$s" %3$s />
 						<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][]"></label>
 					</div>
 					<h3>%4$s</h3>
 					<p class="description">%5$s</p>
+					%6$s
 				</div>',
 				esc_attr( sanitize_title( $addon_name ) ),
 				esc_attr( $addon_data['file'] ),
 				checked( array_key_exists( sanitize_title( $addon_name ), $this->options['addons'] ), 1, false ),
 				esc_html( $addon_name ),
-				esc_html( $addon_data['description'] )
+				esc_html( $addon_data['description'] ),
+				$sub_options
 			);
-
-			if ( 4 === $iteration ) {
-
-				print( '</div>' );
-
-			}
-
-			$iteration++;
 
 		}
 
@@ -433,6 +465,12 @@ class Invalid_Login_Redirect_Settings {
 				'banner'      => '',
 				'file'        => 'class-logging.php',
 				'description' => __( 'Start logging each time an invalid user attempts to login.', 'invalid-login-redirect' ),
+				'sub_options' => [
+					__( 'Invalid Passwords', 'invalid-login-redirect' ) => [
+						'id'          => 'invalid_password',
+						'description' => __( 'Log invalid password entries. This will only log entries for registered users who enter invalid passwords.', 'invalid-login-redirect' ),
+					],
+				],
 			],
 		];
 
