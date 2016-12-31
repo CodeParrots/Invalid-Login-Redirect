@@ -404,26 +404,29 @@ class Invalid_Login_Redirect_Settings {
 
 			if ( $addon_data['sub_options'] ) {
 
-				$sub_options .= '<div class="sub-options">';
+				$sub_options .= sprintf(
+					'<div class="sub-options %s">',
+					esc_attr( array_key_exists( sanitize_title( $addon_name ), $this->options['addons'] ) ? '' : 'hidden' )
+				);
 
-					foreach ( $addon_data['sub_options'] as $label => $option_data ) {
+				foreach ( $addon_data['sub_options'] as $label => $option_data ) {
 
-						$sub_options .= sprintf(
-							'<div class="row">
-								%1$s
-								<div class="checkbox-toggle">
-									<input class="tgl tgl-skewed" name="invalid-login-redirect[addons][%2$s][]" id="invalid-login-redirect[addons][%2$s][]" type="checkbox" value="%3$s" checked="checked" />
-									<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][%2$s][]"></label>
-								</div>
-								<p class="description">%4$s</p>
-							</div>',
-							$label,
-							esc_attr( sanitize_title( $addon_name ) ),
-							esc_attr( $option_data['id'] ),
-							$option_data['description']
-						);
+					$sub_options .= sprintf(
+						'<div class="row">
+							%1$s
+							<div class="checkbox-toggle">
+								<input class="tgl tgl-skewed" name="invalid-login-redirect[addons][%2$s][%3$s]" id="invalid-login-redirect[addons][%2$s][%3$s]" type="checkbox" value="1" checked="checked" />
+								<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][%2$s][%3$s]"></label>
+							</div>
+							<p class="description">%4$s</p>
+						</div>',
+						$label,
+						esc_attr( sanitize_title( $addon_name ) ),
+						esc_attr( $option_data['id'] ),
+						$option_data['description']
+					);
 
-					}
+				}
 
 				$sub_options .= '</div>';
 
@@ -432,13 +435,14 @@ class Invalid_Login_Redirect_Settings {
 			printf(
 				'<div class="col ilr-notice">
 					<div class="checkbox-toggle">
-						<input class="tgl tgl-skewed" name="invalid-login-redirect[addons][%1$s]" id="invalid-login-redirect[addons][]" type="checkbox" value="%2$s" %3$s />
+						<input class="tgl tgl-skewed %1$s" name="invalid-login-redirect[addons][%2$s]" id="invalid-login-redirect[addons][]" type="checkbox" value="%3$s" %4$s />
 						<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][]"></label>
 					</div>
-					<h3>%4$s</h3>
-					<p class="description">%5$s</p>
-					%6$s
+					<h3>%5$s</h3>
+					<p class="description">%6$s</p>
+					%7$s
 				</div>',
+				empty( $sub_options ) ? '' : 'has-sub-options_js',
 				esc_attr( sanitize_title( $addon_name ) ),
 				esc_attr( $addon_data['file'] ),
 				checked( array_key_exists( sanitize_title( $addon_name ), $this->options['addons'] ), 1, false ),
@@ -469,6 +473,10 @@ class Invalid_Login_Redirect_Settings {
 					__( 'Invalid Passwords', 'invalid-login-redirect' ) => [
 						'id'          => 'invalid_password',
 						'description' => __( 'Log invalid password entries. This will only log entries for registered users who enter invalid passwords.', 'invalid-login-redirect' ),
+					],
+					__( 'Dashboard Widget', 'invalid-login-redirect' ) => [
+						'id'          => 'dashboard_widget',
+						'description' => __( 'This activates the dashboard widget so that users can easily see login attempts as soon as they enter the site.', 'invalid-login-redirect' ),
 					],
 				],
 			],
