@@ -247,7 +247,7 @@ class Invalid_Login_Redirect {
 
 		$custom_links[] = sprintf(
 			'<a href="%1$s">%2$s</a>',
-			admin_url( 'options-general.php?page=invalid-login-redirect' ),
+			admin_url( 'tools.php?page=invalid-login-redirect&tab=general' ),
 			esc_html__( 'Settings', 'invalid-login-redirect' )
 		);
 
