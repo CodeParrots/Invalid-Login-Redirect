@@ -43,7 +43,7 @@ final class Invalid_Login_Redirect_Redirection extends Invalid_Login_Redirect {
 	 */
 	public function failed_login_attempt( $username ) {
 
-		self::$user_data = $this->get_login_user_data( $username );
+		self::$user_data = parent::$helpers->get_login_user_data( $username );
 
 		/**
 		 * Trigger an invalid login
@@ -124,7 +124,7 @@ final class Invalid_Login_Redirect_Redirection extends Invalid_Login_Redirect {
 
 		}
 
-		wp_enqueue_style( 'ilr-login-style', plugin_dir_url( __FILE__ ) . '/lib/css/ilr-styles' . ILR_STYLE_SUFFIX . '.css', [], ILR_VERSION );
+		wp_enqueue_style( 'ilr-login-style', ILR_URL . '/lib/css/ilr-styles' . ILR_STYLE_SUFFIX . '.css', [], ILR_VERSION );
 
 		wp_add_inline_style( 'ilr-login-style', ".ilr_message.error {
 			border-color: {$this->options['error_text_border']};
@@ -201,7 +201,7 @@ final class Invalid_Login_Redirect_Redirection extends Invalid_Login_Redirect {
 
 		$user_id = self::$user_data->ID;
 
-		if ( false === ( $attempts = get_transient( "invalid_login_{$user_id}" ) ) ) {
+		if ( false === ( $attempts = parent::$helpers->get_login_user_transient( $user_id ) ) ) {
 
 			$attempt = 1;
 
@@ -216,25 +216,6 @@ final class Invalid_Login_Redirect_Redirection extends Invalid_Login_Redirect {
 		);
 
 		return absint( $attempt );
-
-	}
-
-	/**
-	 * Return the user object
-	 *
-	 * @param  string $username The username/email to retreive
-	 *
-	 * @return array
-	 */
-	public function get_login_user_data( $username ) {
-
-		if ( empty( $user_obj = get_user_by( ( is_email( $username ) ? 'email' : 'login' ), $username ) ) ) {
-
-			return;
-
-		}
-
-		return $user_obj;
 
 	}
 

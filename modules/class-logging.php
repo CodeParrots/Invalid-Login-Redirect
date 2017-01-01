@@ -100,7 +100,7 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 
 		$error_type = key( $error_object->errors );
 
-		if ( ! $this->is_option_enabled( 'logging', $error_type ) ) {
+		if ( ! parent::$helpers->is_option_enabled( 'logging', $error_type ) ) {
 
 			return;
 
@@ -152,15 +152,15 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 	 */
 	public function handle_successful_login( $username, $user_object ) {
 
-		if ( ! $this->is_option_enabled( 'logging', 'successful_login' ) ) {
+		if ( ! parent::$helpers->is_option_enabled( 'logging', 'successful_login' ) ) {
 
 			return;
 
 		}
 
-		$user_obj = get_user_by( ( is_email( $username ) ? 'email' : 'login' ), $username );
+		$user_obj = parent::$helpers->get_login_user_data( $username );
 
-		$attempt = ( ! $user_obj ) ? 1 : ( false !== get_transient( "invalid_login_{$user_obj->ID}" ) ? absint( get_transient( "invalid_login_{$user_obj->ID}" ) + 1 ) : 1 );
+		$attempt = ( ! $user_obj ) ? 1 : ( false !== parent::$helpers->get_login_user_transient( $user_obj->ID ) ? absint( parent::$helpers->get_login_user_transient( $user_obj->ID ) + 1 ) : 1 );
 
 		$this->log_attempt( [
 			'username' => $username,
@@ -233,7 +233,7 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 	 */
 	public function get_log_option_notice() {
 
-		if ( ! $this->is_option_enabled( 'logging' ) ) {
+		if ( ! parent::$helpers->is_option_enabled( 'logging' ) ) {
 
 			return;
 
@@ -295,7 +295,7 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 	 */
 	public function ilr_admin_widget() {
 
-		if ( ! $this->is_option_enabled( 'logging', 'dashboard_widget' ) ) {
+		if ( ! parent::$helpers->is_option_enabled( 'logging', 'dashboard_widget' ) ) {
 
 			return;
 
@@ -324,27 +324,6 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 	public function ilr_admin_Widget_content() {
 
 		include_once( ILR_MODULES . 'partials/logging-dashboard-widget.php' );
-
-	}
-
-	/**
-	 * Helper function to check if the dashboard widget option is active
-	 *
-	 * @return boolean
-	 *
-	 * @since 1.0.0
-	 */
-	private function is_option_enabled( $addon, $option = false ) {
-
-		$addon_name = sanitize_title( $addon );
-
-		if ( $addon && ! $option ) {
-
-			return isset( $this->options['addons'][ $addon_name ] );
-
-		}
-
-		return ( isset( $this->options['addons'][ $addon_name ]['options'] ) && $this->options['addons'][ $addon_name ]['options'][ $option ] );
 
 	}
 

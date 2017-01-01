@@ -55,11 +55,11 @@ class Invalid_Login_Redirect_Settings {
 	*/
 	public function create_admin_page() {
 
-		wp_enqueue_style( 'ilr-admin', plugin_dir_url( __FILE__ ) . '/css/ilr-admin' . ILR_STYLE_SUFFIX . '.css' );
+		wp_enqueue_style( 'ilr-admin', ILR_URL . '/lib/css/ilr-admin' . ILR_STYLE_SUFFIX . '.css' );
 
 		wp_enqueue_style( 'wp-color-picker' );
 
-		wp_enqueue_script( 'ilr-admin', plugin_dir_url( __FILE__ ) . '/js/ilr-admin' . ILR_SCRIPT_SUFFIX . '.js', array( 'wp-color-picker' ), true, ILR_VERSION );
+		wp_enqueue_script( 'ilr-admin', ILR_URL . '/lib/js/ilr-admin' . ILR_SCRIPT_SUFFIX . '.js', array( 'wp-color-picker' ), true, ILR_VERSION );
 
 		wp_add_inline_style( 'ilr-admin', ".ilr_message.invalid {
 			border-color: {$this->options['error_text_border']};

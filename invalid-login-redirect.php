@@ -36,6 +36,8 @@ class Invalid_Login_Redirect {
 	 */
 	private $options;
 
+	public static $helpers;
+
 	public function __construct() {
 
 		require_once( plugin_dir_path( __FILE__ ) . '/constants.php' );
@@ -59,6 +61,10 @@ class Invalid_Login_Redirect {
 
 		}
 
+		require_once( plugin_dir_path( __FILE__ ) . '/lib/class-helpers.php' );
+
+		self::$helpers = new ILR_Helpers( $this->options );
+
 		add_action( 'init', [ $this, 'requirements' ] );
 
 		add_action( 'admin_notices', [ $this, 'ilr_admin_notices' ] );
@@ -74,7 +80,7 @@ class Invalid_Login_Redirect {
 	 */
 	public function requirements() {
 
-		require_once( plugin_dir_path( __FILE__ ) . '/lib/options.php' );
+		require_once( plugin_dir_path( __FILE__ ) . '/lib/class-options.php' );
 
 		new Invalid_Login_Redirect_Settings( $this->options );
 

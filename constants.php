@@ -23,6 +23,18 @@ if ( ! defined( 'ILR_VERSION' ) ) {
 
 }
 
+if ( ! defined( 'ILR_PATH' ) ) {
+
+	define( 'ILR_PATH', plugin_dir_path( __FILE__ ) );
+
+}
+
+if ( ! defined( 'ILR_URL' ) ) {
+
+	define( 'ILR_URL', plugin_dir_url( __FILE__ ) );
+
+}
+
 if ( ! defined( 'ILR_STYLE_SUFFIX' ) ) {
 
 	define( 'ILR_STYLE_SUFFIX', ( ( is_rtl() ? '-rtl' : '' ) . ( WP_DEBUG ? '' : '.min' ) ) );

@@ -94,6 +94,21 @@ body.tools_page_invalid-login-redirect .col {
 	margin-bottom: 24px;
 }
 
+	.ilr-settings-container .general.add-on .form-table tr:last-child {
+		background: transparent;
+		padding: 0;
+		box-shadow: none;
+	}
+
+		.ilr-settings-container .general.add-on .form-table tr:last-child td {
+			padding-right: 0;
+			color: #444;
+		}
+
+		.ilr-settings-container .general.add-on .form-table tr:last-child td .ilr_message p {
+			margin-top: 0;
+		}
+
 	.ilr-settings-container .form-table tr:first-child {
 		margin-top: 25px;
 	}
