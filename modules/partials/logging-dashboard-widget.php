@@ -11,6 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 }
 
+$logs = parent::$helpers->get_ilr_log( 2 );
+
 ?>
 
 <strong>Ben, the markup will go here.</strong>

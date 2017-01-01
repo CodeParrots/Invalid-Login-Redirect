@@ -278,7 +278,7 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 
 		include_once( ILR_MODULES . 'partials/class-log-table.php' );
 
-		$log_table = new Invalid_Login_Redirect_Log_Table();
+		$log_table = new Invalid_Login_Redirect_Log_Table( parent::$helpers );
 
 		$log_table->prepare_items();
 

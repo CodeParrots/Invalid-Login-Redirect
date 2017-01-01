@@ -6,9 +6,13 @@
  */
 class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 
-	function __construct() {
+	private $helpers;
+
+	function __construct( $helpers ) {
 
 		global $status, $page;
+
+		$this->helpers = $helpers;
 
 		parent::__construct( array(
 			'singular'  => 'log',
@@ -306,13 +310,7 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 
 		$log_data = [];
 
-		$log_query = new WP_Query( [
-			'post_type'      => 'ilr_log',
-			'meta_key'       => 'ilr_log_timestamp',
-			'orderby'        => 'meta_value_num',
-			'order'          => 'DESC',
-			'posts_per_page' => -1,
-		] );
+		$log_query = $this->helpers->get_ilr_log();
 
 		if ( $log_query->have_posts() ) {
 
