@@ -231,7 +231,18 @@ class Invalid_Login_Redirect_Settings {
 		$new_input['login_limit']       = ! empty( $input['login_limit'] ) ? absint( $input['login_limit'] ) : $this->options['login_limit'];
 		$new_input['error_text']        = isset( $input['error_text'] ) ? trim( $input['error_text'] ) : $this->options['error_text'];
 		$new_input['error_text_border'] = isset( $input['error_text_border'] ) ? sanitize_text_field( $input['error_text_border'] ) : $this->options['error_text_border'];
-		$new_input['addons']            = isset( $input['addons'] ) ? (array) $input['addons'] : [];
+
+		foreach ( $input['addons'] as $addon => $data ) {
+
+			if ( ! isset( $data['file'] ) ) {
+
+				unset( $input['addons'][ $addon ] );
+
+			}
+
+		}
+
+		$new_input['addons'] = (array) $input['addons'];
 
 		return $new_input;
 
@@ -415,8 +426,8 @@ class Invalid_Login_Redirect_Settings {
 						'<div class="row">
 							%1$s
 							<div class="checkbox-toggle">
-								<input class="tgl tgl-skewed" name="invalid-login-redirect[addons][%2$s][%3$s]" id="invalid-login-redirect[addons][%2$s][%3$s]" type="checkbox" value="1" checked="checked" />
-								<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][%2$s][%3$s]"></label>
+								<input class="tgl tgl-skewed" name="invalid-login-redirect[addons][%2$s][options][%3$s]" id="invalid-login-redirect[addons][%2$s][options][%3$s]" type="checkbox" value="1" checked="checked" />
+								<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][%2$s][options][%3$s]"></label>
 							</div>
 							<p class="description">%4$s</p>
 						</div>',
@@ -435,8 +446,8 @@ class Invalid_Login_Redirect_Settings {
 			printf(
 				'<div class="col ilr-notice">
 					<div class="checkbox-toggle">
-						<input class="tgl tgl-skewed %1$s" name="invalid-login-redirect[addons][%2$s]" id="invalid-login-redirect[addons][]" type="checkbox" value="%3$s" %4$s />
-						<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][]"></label>
+						<input class="tgl tgl-skewed %1$s" name="invalid-login-redirect[addons][%2$s][file]" id="invalid-login-redirect[addons][%2$s][file]" type="checkbox" value="%3$s" %4$s />
+						<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][%2$s][file]"></label>
 					</div>
 					<h3>%5$s</h3>
 					<p class="description">%6$s</p>

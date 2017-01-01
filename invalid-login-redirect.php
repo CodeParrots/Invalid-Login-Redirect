@@ -105,16 +105,19 @@ class Invalid_Login_Redirect {
 
 		}
 
-		foreach ( $this->options['addons'] as $addon_name => $addon_file ) {
+		foreach ( $this->options['addons'] as $addon => $data ) {
 
-			// Temp fix
-			if ( is_array( $addon_file ) ) {
+			if ( ! isset( $data['file'] ) ) {
 
-				//continue;
+				continue;
 
 			}
 
-			include_once( ILR_MODULES . $addon_file );
+			if ( file_exists( ILR_MODULES . $data['file'] ) ) {
+
+				include_once( ILR_MODULES . $data['file'] );
+
+			}
 
 		}
 

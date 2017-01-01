@@ -119,6 +119,46 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 
 	}
 
+	function display_tablenav( $which ) {
+
+		?>
+
+		<div class="tablenav <?php echo esc_attr( $which ); ?>">
+
+			<?php
+
+			if ( $this->has_items() ) {
+
+			?>
+
+				<div class="alignleft actions bulkactions">
+
+					<select name="do-action" id="bulk-action-selector-top">
+						<option value="-1">Bulk Actions</option>
+						<option value="delete">Delete</option>
+						<option value="ban">Ban</option>
+					</select>
+
+					<input type="submit" id="doaction" class="button action" value="<?php esc_html_e( 'Apply', 'invalid-login-redirect' ); ?>">
+
+				</div>
+
+			<?php
+
+			}
+
+			$this->extra_tablenav( $which );
+			$this->pagination( $which );
+
+			?>
+
+			<br class="clear" />
+
+		</div>
+
+		<?php
+
+	}
 
 	function get_bulk_actions() {
 
