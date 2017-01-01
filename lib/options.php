@@ -44,7 +44,8 @@ class Invalid_Login_Redirect_Settings {
 	*/
 	public function add_plugin_page() {
 
-		add_options_page(
+		add_submenu_page(
+			'tools.php',
 			__( 'Invalid Login Redirect Options', 'invalid-login-redirect' ),
 			__( 'Invalid Login Redirect', 'invalid-login-redirect' ),
 			'manage_options',
@@ -262,6 +263,19 @@ class Invalid_Login_Redirect_Settings {
 			__( 'Add-Ons', 'invalid-login-redirect' ),
 		] );
 
+		$settings_updated = filter_input( INPUT_GET, 'settings-updated', FILTER_SANITIZE_STRING );
+
+		if ( $settings_updated ) {
+
+			printf(
+				'<div class="notice notice-success is-dismissible">
+					<p>%s</p>
+				</div>',
+				esc_html__( 'Settings saved.', 'invalid-login-redirect' )
+			);
+
+		}
+
 		?>
 
 		<div class="ilr-notice ilr-navigation">
@@ -422,18 +436,31 @@ class Invalid_Login_Redirect_Settings {
 
 				foreach ( $addon_data['sub_options'] as $label => $option_data ) {
 
+					$checked = '';
+
+					if ( isset( $this->options['addons'][ sanitize_title( $addon_name ) ]['options'] ) ) {
+
+						if ( $this->options['addons'][ sanitize_title( $addon_name ) ]['options'][ $option_data['id'] ] ) {
+
+							$checked = 'checked="checked"';
+
+						}
+
+					}
+
 					$sub_options .= sprintf(
 						'<div class="row">
 							%1$s
 							<div class="checkbox-toggle">
-								<input class="tgl tgl-skewed" name="invalid-login-redirect[addons][%2$s][options][%3$s]" id="invalid-login-redirect[addons][%2$s][options][%3$s]" type="checkbox" value="1" checked="checked" />
+								<input class="tgl tgl-skewed" name="invalid-login-redirect[addons][%2$s][options][%3$s]" id="invalid-login-redirect[addons][%2$s][options][%3$s]" type="checkbox" value="1" %4$s />
 								<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][%2$s][options][%3$s]"></label>
 							</div>
-							<p class="description">%4$s</p>
+							<p class="description">%5$s</p>
 						</div>',
 						$label,
 						esc_attr( sanitize_title( $addon_name ) ),
 						esc_attr( $option_data['id'] ),
+						$checked,
 						$option_data['description']
 					);
 
