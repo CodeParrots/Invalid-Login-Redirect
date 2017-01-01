@@ -112,6 +112,24 @@ class Invalid_Login_Redirect_Settings {
 
 					<?php
 
+						if ( INVALID_LOGIN_REDIRECT_DEVELOPER ) { // @codingStandardsIgnoreLine
+
+							printf(
+								'<div class="ilr-notice developer-notice">
+									<div class="icon"><span class="dashicons dashicons-admin-tools"></span></div>
+									<div class="content">
+										<div class="text">%s</div>
+									</div>
+								</div>',
+								sprintf(
+									__( 'Currently in %1$s via the %2$s constant.', 'invalid-login-redirect' ),
+									'<em>' . __( 'Developer Mode', 'invalid-login-redirect' ) . '</em>',
+									'<code>INVALID_LOGIN_REDIRECT_DEVELOPER</code>'
+								)
+							);
+
+						} // @codingStandardsIgnoreLine
+
 						settings_fields( 'ilr_options' );
 
 						$this->print_options_nav();
@@ -529,8 +547,16 @@ class Invalid_Login_Redirect_Settings {
 				'description' => __( 'Start logging each time an invalid user attempts to login.', 'invalid-login-redirect' ),
 				'sub_options' => [
 					__( 'Invalid Passwords', 'invalid-login-redirect' ) => [
-						'id'          => 'invalid_password',
+						'id'          => 'incorrect_password',
 						'description' => __( 'Log invalid password entries. This will only log entries for registered users who enter invalid passwords.', 'invalid-login-redirect' ),
+					],
+					__( 'Invalid Usernames', 'invalid-login-redirect' ) => [
+						'id'          => 'invalid_username',
+						'description' => __( 'Log etnries for users who try and login with usernames that have not yet been registered on the site.', 'invalid-login-redirect' ),
+					],
+					__( 'Successful Logins', 'invalid-login-redirect' ) => [
+						'id'          => 'successful_login',
+						'description' => __( 'Log entries each time users successfully log in to the site.', 'invalid-login-redirect' ),
 					],
 					sprintf( __( 'Dashboard Widget %s', 'invalid-login-redirect' ), '<span class="badge widget">' . __( 'widget', 'invalid-login-redirect' ) . '</span>' ) => [
 						'id'          => 'dashboard_widget',

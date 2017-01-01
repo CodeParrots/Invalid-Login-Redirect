@@ -26,7 +26,7 @@ final class Invalid_Login_Redirect_Redirection extends Invalid_Login_Redirect {
 
 		add_action( 'ilr_invalid_login',     [ $this, 'handle_invalid_login' ], 10, 2 );
 
-		add_action( 'wp_login',              [ $this, 'clear_invalid_login_transients' ], 10, 2 );
+		add_action( 'wp_login',              [ $this, 'clear_invalid_login_transients' ], 15, 2 );
 
 		add_action( 'login_enqueue_scripts', [ $this, 'ilr_login_styles' ] );
 
@@ -90,6 +90,22 @@ final class Invalid_Login_Redirect_Redirection extends Invalid_Login_Redirect {
 		wp_redirect( esc_url_raw( $this->build_redirect_url( $username ) ) );
 
 		exit;
+
+	}
+
+	/**
+	 * Clear the login transients for the user after a successful login
+	 *
+	 * @param  string $username    The username
+	 * @param  obj    $user_object The user object
+	 *
+	 * @return bool
+	 *
+	 * @since 0.0.1
+	 */
+	public function clear_invalid_login_transients( $username, $user_object ) {
+
+		delete_transient( "invalid_login_{$user_object->ID}" );
 
 	}
 
@@ -165,22 +181,6 @@ final class Invalid_Login_Redirect_Redirection extends Invalid_Login_Redirect {
 		}
 
 		return $this->options['redirect_url'];
-
-	}
-
-	/**
-	 * Clear the login transients for the user after a successful login
-	 *
-	 * @param  string $username    The username
-	 * @param  obj    $user_object The user object
-	 *
-	 * @return bool
-	 *
-	 * @since 0.0.1
-	 */
-	public function clear_invalid_login_transients( $username, $user_object ) {
-
-		delete_transient( "invalid_login_{$user_object->ID}" );
 
 	}
 

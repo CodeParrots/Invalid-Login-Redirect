@@ -67,24 +67,76 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 
 	function column_type( $item ) {
 
-		switch ( $item['type'] ) {
+		$item_type = array_map( function( $type ) use ( $item ) {
 
-			case 'invalid_password':
+			switch ( $type ) {
 
-				$type = [
-					'class' => 'invalid-password',
-					'text'  => __( 'Invalid Password', 'invalid-login-redirect' ),
-				];
+				default:
+				case 'incorrect_password':
 
-				break;
+					return [
+						'class' => 'invalid-password',
+						'text'  => __( 'Invalid Password', 'invalid-login-redirect' ),
+					];
+
+					break;
+
+				case 'invalid_username':
+
+					return [
+						'class' => 'invalid-username',
+						'text'  => __( 'Invalid Username', 'invalid-login-redirect' ),
+					];
+
+					break;
+
+				case 'admin_username':
+
+					return [
+						'class'   => 'admin-username',
+						'tooltip' => sprintf(
+							_x( 'A user tried to login to the site using the username "%s".', 'Username used to log in', 'invalid-login-redirect' ),
+							esc_html( $item['username'] )
+						),
+						'text'    => sprintf(
+							_x( '%s Admin Username', 'Dashicon warning icon.', 'invalid-login-redirect' ),
+							'<span class="dashicons dashicons-warning"></span>'
+						),
+					];
+
+					break;
+
+				case 'successful_login':
+
+					return [
+						'class'   => 'successful-login',
+						'text'    => sprintf(
+							_x( '%s Login', 'Dashicon yes icon.', 'invalid-login-redirect' ),
+							'<span class="dashicons dashicons-yes"></span>'
+						),
+					];
+
+					break;
+
+			} // @codingStandardsIgnoreLine
+
+		}, (array) $item['type'] );
+
+		foreach ( $item_type as $type ) {
+
+			$tooltip = isset( $type['tooltip'] ) ? sprintf(
+				'<span class="tip-content">%s</span>',
+				esc_html( $type['tooltip'] )
+			) : '';
+
+			printf(
+				'<div class="badge %1$s">%2$s</div>%3$s',
+				esc_attr( $type['class'] ),
+				wp_kses_post( $type['text'] ),
+				$tooltip
+			);
 
 		}
-
-		return sprintf(
-			'<div class="badge %1$s">%2$s</div>',
-			esc_attr( $type['class'] ),
-			esc_html( $type['text'] )
-		);
 
 	}
 
@@ -240,7 +292,7 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 	**************************************************************************/
 	function prepare_items() {
 
-		$per_page = apply_filters( 'ilr_log_table_limit', 50 );
+		$per_page = (int) apply_filters( 'ilr_log_table_limit', 20 );
 
 		$columns = $this->get_columns();
 
@@ -256,7 +308,10 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 
 		$log_query = new WP_Query( [
 			'post_type'      => 'ilr_log',
-			'posts_per_page' => 200,
+			'meta_key'       => 'ilr_log_timestamp',
+			'orderby'        => 'meta_value_num',
+			'order'          => 'DESC',
+			'posts_per_page' => -1,
 		] );
 
 		if ( $log_query->have_posts() ) {
@@ -273,7 +328,7 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 					'type'       => get_post_meta( get_the_ID(), 'ilr_log_type', true ),
 				];
 
-			}
+			} // @codingStandardsIgnoreLine
 
 		}
 
@@ -284,7 +339,7 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 		* to handle sorting by passing the 'orderby' and 'order' values directly
 		* to a custom query. The returned data will be pre-sorted, and this array
 		* sorting technique would be unnecessary.
-		*/
+
 		function usort_reorder( $a, $b ) {
 
 			$orderby = ( ! empty( $_REQUEST['orderby'] ) ) ? $_REQUEST['orderby'] : 'title';
@@ -298,7 +353,7 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 		}
 
 		usort( $log_data, 'usort_reorder' );
-
+		*/
 		$current_page = $this->get_pagenum();
 
 		$total_items = count( $log_data );

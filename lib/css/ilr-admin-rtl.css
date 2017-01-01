@@ -136,21 +136,146 @@ body.tools_page_invalid-login-redirect .col {
 body.tools_page_invalid-login-redirect div.logging.add-on .badge {
 	border-radius: 2px;
 	color: #fff;
-	padding: 3px 5px;
+	padding: 0 5px;
 	font-size: 10px;
 	text-align: center;
-	display: inherit;
+	display: table;
 	border: 1px solid transparent;
 }
 
-	body.tools_page_invalid-login-redirect div.logging.add-on .badge.invalid-password {
-		background: #ff8080;
-		border-color: #de7676;
+	body.tools_page_invalid-login-redirect div.logging.add-on .badge:not(:first-child) {
+		margin-top: 3px;
 	}
+
+	body.tools_page_invalid-login-redirect div.logging.add-on .badge.invalid-password {
+		color: #a94442;
+		background: #f2dede;
+		border-color: #ebccd1;
+	}
+
+	body.tools_page_invalid-login-redirect div.logging.add-on .badge.invalid-username {
+		color: #8a6d3b;
+		background: #fcf8e3;
+		border-color: #faebcc;
+	}
+
+	body.tools_page_invalid-login-redirect div.logging.add-on .badge.admin-username {
+		color: #31708f;
+		background: #d9edf7;
+		border-color: #bce8f1;
+	}
+
+	body.tools_page_invalid-login-redirect div.logging.add-on .badge.successful-login {
+		color: #3c763d;
+		background: #dff0d8;
+		border-color: #d6e9c6;
+	}
+
+		body.tools_page_invalid-login-redirect div.logging.add-on .badge .dashicons {
+			font-size: 12px;
+			height: 12px;
+			width: 13px;
+			line-height: 1.6;
+		}
+
+	/**
+	 * Log Table tooltips
+	 */
+	body.tools_page_invalid-login-redirect div.logging.add-on .column-type .badge {
+		position: relative;
+		cursor: pointer;
+	}
+
+	body.tools_page_invalid-login-redirect div.logging.add-on .column-type .badge + .tip-content {
+			position:absolute;
+			top: -10px;
+			left: 9999px;
+			width: 200px;
+			margin-left: -220px;
+			padding: 10px;
+			font-size: 10px;
+			line-height: 1.5;
+			color: #fff;
+			background: #333;
+			-webkit-box-shadow: -2px 2px 5px #aaa;
+			   -moz-box-shadow: -2px 2px 5px #aaa;
+				      box-shadow: -2px 2px 5px #aaa;
+			opacity: 0;
+			-webkit-transition: opacity 250ms ease-out;
+			-moz-transition: opacity 250ms ease-out;
+			 -ms-transition: opacity 250ms ease-out;
+			  -o-transition: opacity 250ms ease-out;
+			     transition: opacity 250ms ease-out;
+	 -webkit-transition-delay: 0.5s; /* Safari */
+		       transition-delay: 0.5s;
+					 z-index: 9;
+	}
+
+	body.tools_page_invalid-login-redirect div.logging.add-on .column-type .badge:hover + .tip-content {
+		left: auto !important;
+		top: auto !important;
+		opacity: 1;
+		margin-top: 3px;
+	}
+
+	/** end tooltips **/
 
 .ilr-notice.in-progress {
 	opacity: 0.8;
 }
+
+.ilr-notice.developer-notice,
+.ilr-notice.tracking-notice {
+	display: flex;
+}
+
+.ilr-notice.developer-notice .content,
+.ilr-notice.tracking-notice .content {
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-positive: 1;
+	flex-grow: 1;
+}
+
+	.ilr-notice.developer-notice .content .text,
+	.ilr-notice.tracking-notice .content .text {
+		padding: 13px;
+	}
+
+	.ilr-notice.developer-notice .icon,
+	.ilr-notice.tracking-notice .icon {
+		-ms-flex-negative: 0;
+		flex-shrink: 0;
+		padding: 13px 16px 13px 0;
+	}
+
+		.ilr-notice.developer-notice .icon .dashicons,
+		.ilr-notice.tracking-notice .icon .dashicons {
+			border-radius: 50%;
+			background: #87a6bc;
+			color: white;
+			padding: 5px;
+			height: 15px;
+			width: 15px;
+			font-size: 15px;
+		}
+
+	.ilr-notice.developer-notice .content span,
+	.ilr-notice.tracking-notice .content span {
+		padding: 13px;
+	}
+
+	.ilr-notice .tracking-list {
+		font-size: 12px;
+	}
+
+	.ilr-notice .tracking-list li .dashicons {
+		padding: 0;
+		font-size: 17px;
+		height: 17px;
+		width: 17px;
+		vertical-align: middle;
+	}
 
 .ilr-notice .badge {
 	color: #fff;

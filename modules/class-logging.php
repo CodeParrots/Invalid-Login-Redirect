@@ -10,19 +10,31 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 
 	private $options;
 
+	private $log_defaults;
+
 	public function __construct( $options ) {
 
 		$this->options = $options;
 
+		$this->log_defaults = [
+			'username'   => '',
+			'attempt'    => '-',
+			'timestamp'  => current_time( 'timestamp' ),
+			'ip_address' => $this->get_user_ip(),
+			'type'       => '',
+		];
+
 		include_once( ILR_MODULES . 'partials/logging-cpt.php' );
 
-		add_filter( 'ilr_options_nav_items', [ $this, 'option_nav_item' ] );
+		add_filter( 'ilr_options_nav_items',    [ $this, 'option_nav_item' ] );
 
-		add_action( 'ilr_options_section', [ $this, 'option_section' ] );
+		add_action( 'ilr_options_section',      [ $this, 'option_section' ] );
 
-		add_action( 'ilr_handle_invalid_login', [ $this, 'log_invalid_password' ], 10, 4 );
+		add_action( 'ilr_handle_invalid_login', [ $this, 'handle_login_attempt' ], 10, 4 );
 
-		add_action( 'wp_dashboard_setup', [ $this, 'ilr_admin_widget' ] );
+		add_action( 'wp_login',                 [ $this, 'handle_successful_login' ], 10, 2 );
+
+		add_action( 'wp_dashboard_setup',       [ $this, 'ilr_admin_widget' ] );
 
 	}
 
@@ -58,7 +70,13 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 
 		<div class="logging add-on <?php if ( ( $tab && 'logging' !== $tab ) || ! $tab ) { echo 'hidden'; } ?>">
 
-			<?php $this->get_log_table(); ?>
+			<?php
+
+				$this->get_log_option_notice();
+
+				$this->get_log_table();
+
+			?>
 
 		</div>
 
@@ -78,20 +96,76 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 	 *
 	 * @since 1.0.0
 	 */
-	public function log_invalid_password( $username, $attempt_number, $error_object, $user_data ) {
+	public function handle_login_attempt( $username, $attempt_number, $error_object, $user_data ) {
 
-		if ( ! $this->is_option_enabled( 'logging', 'invalid_password' ) ) {
+		$error_type = key( $error_object->errors );
+
+		if ( ! $this->is_option_enabled( 'logging', $error_type ) ) {
 
 			return;
 
 		}
 
+		switch ( $error_type ) {
+
+			default:
+			case 'incorrect_password':
+
+				$attempt = (int) $attempt_number;
+
+				break;
+
+			case 'invalid_username':
+
+				$attempt = '-';
+
+				break;
+
+		}
+
+		if ( 'admin' === $username ) {
+
+			$error_type = [
+				$error_type,
+				'admin_username',
+			];
+
+		}
+
 		$this->log_attempt( [
-			'username'   => $username,
-			'attempt'    => (int) $attempt_number,
-			'timestamp'  => current_time( 'timestamp' ),
-			'ip_address' => $this->get_user_ip(),
-			'type'       => 'invalid_password',
+			'username' => $username,
+			'attempt'  => $attempt,
+			'type'     => $error_type,
+		] );
+
+	}
+
+	/**
+	 * Handle a successful login
+	 *
+	 * @param  string $username    The username
+	 * @param  obj    $user_object The user object
+	 *
+	 * @return bool
+	 *
+	 * @since 0.0.1
+	 */
+	public function handle_successful_login( $username, $user_object ) {
+
+		if ( ! $this->is_option_enabled( 'logging', 'successful_login' ) ) {
+
+			return;
+
+		}
+
+		$user_obj = get_user_by( ( is_email( $username ) ? 'email' : 'login' ), $username );
+
+		$attempt = ( ! $user_obj ) ? 1 : ( false !== get_transient( "invalid_login_{$user_obj->ID}" ) ? absint( get_transient( "invalid_login_{$user_obj->ID}" ) + 1 ) : 1 );
+
+		$this->log_attempt( [
+			'username' => $username,
+			'attempt'  => $attempt,
+			'type'     => 'successful_login',
 		] );
 
 	}
@@ -105,6 +179,8 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 	 */
 	public function log_attempt( $data ) {
 
+		$data = wp_parse_args( $data, $this->log_defaults );
+
 		$post_id = wp_insert_post( [
 			'post_title'  => $data['username'],
 			'post_type'   => 'ilr_log',
@@ -117,11 +193,7 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 
 				update_post_meta( $post_id, "ilr_log_{$name}", $value );
 
-			}
-
-		} else {
-
-			wp_die( $post_id );
+			} // @codingStandardsIgnoreLine
 
 		}
 
@@ -149,6 +221,51 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 		}
 
 		return $ip;
+
+	}
+
+	/**
+	 * Generate the logging notice
+	 *
+	 * @return mixed
+	 *
+	 * @since 1.0.0
+	 */
+	public function get_log_option_notice() {
+
+		if ( ! $this->is_option_enabled( 'logging' ) ) {
+
+			return;
+
+		}
+
+		unset( $this->options['addons']['logging']['options']['dashboard_widget'] );
+
+		$notice_text = __( 'You are currently not tracking anything. To start tracking actions, click on the "Add-Ons" tab in the navigation and enable some sub-options under the "Logging" add-on.', 'invalid-login-redirect' );
+
+		if ( ! empty( $this->options['addons']['logging']['options'] ) ) {
+
+			$notice_text = __( 'You are currently tracking the following user actions:', 'invalid-login-redirect' ) . '<ul class="tracking-list">';
+
+			foreach ( $this->options['addons']['logging']['options'] as $option => $value ) {
+
+				$notice_text .= '<li><span class="dashicons dashicons-arrow-right"></span> ' . ucwords( str_replace( '_', ' ', $option ) ) . '</li>';
+
+			}
+
+			$notice_text .= '</ul>';
+
+		}
+
+		printf(
+			'<div class="ilr-notice tracking-notice">
+				<div class="icon"><span class="dashicons dashicons-chart-area"></span></div>
+				<div class="content">
+					<div class="text">%s</div>
+				</div>
+			</div>',
+			$notice_text
+		);
 
 	}
 
@@ -223,7 +340,7 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 
 		if ( $addon && ! $option ) {
 
-			return isset( $this->options['addons'][ $addon_name ]['options'] );
+			return isset( $this->options['addons'][ $addon_name ] );
 
 		}
 
