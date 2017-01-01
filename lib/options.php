@@ -8,15 +8,9 @@ class Invalid_Login_Redirect_Settings {
 
 	private $options;
 
-	private $version;
-
-	private $style_suffix;
-
-	private $script_suffix;
-
 	private $tab;
 
-	public function __construct( $options, $version, $suffix ) {
+	public function __construct( $options ) {
 
 		if ( ! is_admin() ) {
 
@@ -24,11 +18,8 @@ class Invalid_Login_Redirect_Settings {
 
 		}
 
-		$this->options        = $options;
-		$this->version        = $version;
-		$this->style_suffix   = $suffix;
-		$this->script_suffix  = WP_DEBUG ? '' : '.min';
-		$this->tab            = filter_input( INPUT_GET, 'tab', FILTER_SANITIZE_STRING );
+		$this->options = $options;
+		$this->tab     = filter_input( INPUT_GET, 'tab', FILTER_SANITIZE_STRING );
 
 		add_action( 'admin_menu', [ $this, 'add_plugin_page' ] );
 
@@ -64,11 +55,11 @@ class Invalid_Login_Redirect_Settings {
 	*/
 	public function create_admin_page() {
 
-		wp_enqueue_style( 'ilr-admin', plugin_dir_url( __FILE__ ) . "/css/ilr-admin{$this->style_suffix}.css" );
+		wp_enqueue_style( 'ilr-admin', plugin_dir_url( __FILE__ ) . '/css/ilr-admin' . ILR_STYLE_SUFFIX . '.css' );
 
 		wp_enqueue_style( 'wp-color-picker' );
 
-		wp_enqueue_script( 'ilr-admin', plugin_dir_url( __FILE__ ) . "/js/ilr-admin{$this->script_suffix}.js", array( 'wp-color-picker' ), true, $this->version );
+		wp_enqueue_script( 'ilr-admin', plugin_dir_url( __FILE__ ) . '/js/ilr-admin' . ILR_SCRIPT_SUFFIX . '.js', array( 'wp-color-picker' ), true, ILR_VERSION );
 
 		wp_add_inline_style( 'ilr-admin', ".ilr_message.invalid {
 			border-color: {$this->options['error_text_border']};
@@ -88,7 +79,7 @@ class Invalid_Login_Redirect_Settings {
 
 					printf(
 						'<span class="badge version">v%s</span>',
-						$this->version
+						ILR_VERSION
 					);
 
 					if ( INVALID_LOGIN_REDIRECT_DEVELOPER ) {
@@ -259,7 +250,7 @@ class Invalid_Login_Redirect_Settings {
 
 				unset( $input['addons'][ $addon ] );
 
-			}
+			} // @codingStandardsIgnoreLine
 
 		}
 
@@ -464,7 +455,7 @@ class Invalid_Login_Redirect_Settings {
 
 							$checked = 'checked="checked"';
 
-						}
+						} // @codingStandardsIgnoreLine
 
 					}
 

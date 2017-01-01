@@ -29,21 +29,16 @@
 
 class Invalid_Login_Redirect {
 
-	private $version;
-
-	private $reset_user_key;
-
+	/**
+	 * Plugin Options
+	 *
+	 * @var array
+	 */
 	private $options;
-
-	private $script_suffix;
-
-	private static $user_data;
 
 	public function __construct() {
 
-		$this->version = '1.0.0';
-
-		$this->reset_user_key = apply_filters( 'ilr_reset_user_key', 'reset_user' );
+		require_once( plugin_dir_path( __FILE__ ) . '/constants.php' );
 
 		$this->options = get_option( 'invalid-login-redirect', [
 			'login_limit'       => 3,
@@ -53,57 +48,38 @@ class Invalid_Login_Redirect {
 			'addons'            => [],
 		] );
 
-		$this->script_suffix = ( is_rtl() ? '-rtl' : '' ) . ( WP_DEBUG ? '' : '.min' );
-
 		foreach ( $this->options as $name => $value ) {
 
 			/**
 			 * Filter our options
+			 *
 			 * Sample Filter: ilr_login_limit
 			 */
 			$this->options[ $name ] = apply_filters( "ilr_{$name}", $value );
 
 		}
 
-		if ( ! defined( 'ILR_MODULES' ) ) {
+		add_action( 'init', [ $this, 'requirements' ] );
 
-			define( 'ILR_MODULES', plugin_dir_path( __FILE__ ) . 'modules/' );
-
-		}
-
-		if ( ! defined( 'ILR_IMAGES' ) ) {
-
-			define( 'ILR_IMAGES', plugin_dir_url( __FILE__ ) . 'lib/images/' );
-
-		}
-
-		if ( ! defined( 'INVALID_LOGIN_REDIRECT_DEVELOPER' ) ) {
-
-			define( 'INVALID_LOGIN_REDIRECT_DEVELOPER', false );
-
-		}
-
-		require_once( plugin_dir_path( __FILE__ ) . '/lib/options.php' );
-
-		new Invalid_Login_Redirect_Settings( $this->options, $this->version, $this->script_suffix );
-
-		add_action( 'init', [ $this, 'instantiate_addons' ] );
-
-		add_action( 'wp_login_failed',       [ $this, 'failed_login_attempt' ] );
-
-		add_action( 'ilr_invalid_login',     [ $this, 'handle_invalid_login' ], 10, 2 );
-
-		add_action( 'wp_login',              [ $this, 'clear_invalid_login_transients' ], 10, 2 );
-
-		add_action( 'login_enqueue_scripts', [ $this, 'ilr_login_styles' ] );
-
-		add_filter( 'login_message',         [ $this, 'generate_too_many_attempts_notice' ] );
+		add_action( 'admin_notices', [ $this, 'ilr_admin_notices' ] );
 
 		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), [ $this, 'ilr_plugin_action_links' ] );
 
 	}
 
-	public function instantiate_addons() {
+	/**
+	 * Load our addons
+	 *
+	 * @since 1.0.0
+	 */
+	public function requirements() {
+
+		require_once( plugin_dir_path( __FILE__ ) . '/lib/options.php' );
+
+		new Invalid_Login_Redirect_Settings( $this->options );
+
+		// Base module, invalid login redirects
+		include_once( ILR_MODULES . 'class-login-redirect.php' );
 
 		if ( empty( $this->options['addons'] ) ) {
 
@@ -123,119 +99,46 @@ class Invalid_Login_Redirect {
 
 				include_once( ILR_MODULES . $data['file'] );
 
-			}
+			} // @codingStandardsIgnoreLine
 
 		}
 
 	}
 
 	/**
-	 * Failed login attempt
+	 * Admin notices
 	 *
-	 * @return null
+	 * @param  string $wp  Minimum WordPress version number allowed
+	 * @param  string $php Minimum PHP version allowed
 	 *
-	 * @since 0.0.1
+	 * @return mixed
+	 *
+	 * @since 1.0.0
 	 */
-	public function failed_login_attempt( $username ) {
+	public function ilr_admin_notices( $wp = '4.5', $php = '5.6' ) {
 
-		self::$user_data = $this->get_login_user_data( $username );
+		global $wp_version;
 
-		/**
-		 * Trigger an invalid login
-		 *
-		 * @hooked handle_invalid_login - 10
-		 */
-		do_action( 'ilr_invalid_login', $username, $_POST );
+		$flag = ( version_compare( PHP_VERSION, $php, '<' ) ) ? 'PHP' : ( ( version_compare( $wp_version, $wp, '<' ) ) ? 'WordPress' : false );
 
-	}
-
-	/**
-	 * Invalid login action handler
-	 *
-	 * @param  string $username The username
-	 *
-	 * @return bool
-	 *
-	 * @since 0.0.1
-	 */
-	public function handle_invalid_login( $username, $login_data ) {
-
-		$error_obj = apply_filters( 'authenticate', null, $username, $login_data['pwd'] );
-		$attempts  = $this->log_invalid_login_attempt( $username );
-
-		/**
-		 * Log an invalid password attempt
-		 *
-		 * @hooked log_invalid_password - 10
-		 */
-		do_action( 'ilr_handle_invalid_login', $username, $attempts, $error_obj, self::$user_data );
-
-		if (
-			'invalid_username' === key( $error_obj->errors ) ||
-			! $attempts ||
-			$this->options['login_limit'] > $attempts
-		) {
+		if ( ! $flag ) {
 
 			return;
 
 		}
 
-		delete_transient( 'invalid_login_' . self::$user_data->ID );
+		$version = 'PHP' == $flag ? $php : $wp;
 
-		wp_redirect( esc_url_raw( $this->build_redirect_url( $username ) ) );
-
-		exit;
-
-	}
-
-	/**
-	 * Enqueue Invalid Login Redirect Styles
-	 *
-	 * @return bool
-	 *
-	 * @since 0.0.1
-	 */
-	public function ilr_login_styles() {
-
-		if ( ! isset( $_GET[ $this->reset_user_key ] ) ) {
-
-			return;
-
-		}
-
-		wp_enqueue_style( 'ilr-login-style', plugin_dir_url( __FILE__ ) . "/lib/css/ilr-styles{$this->script_suffix}.css", [], $this->version );
-
-		wp_add_inline_style( 'ilr-login-style', ".ilr_message.error {
-			border-color: {$this->options['error_text_border']};
-		}" );
-
-	}
-
-	/**
-	 * Generate our "Too many attempts" notice
-	 *
-	 * @param  string $message The original login message.
-	 *
-	 * @return string
-	 *
-	 * @since 0.0.1
-	 */
-	public function generate_too_many_attempts_notice( $message ) {
-
-		$username = filter_input( INPUT_GET, $this->reset_user_key, FILTER_SANITIZE_STRING );
-
-		if ( ! $username || empty( $this->options['error_text'] ) ) {
-
-			return $message;
-
-		}
-
-		$_POST['user_login'] = $username;
-
-		return sprintf(
-			'<div class="ilr_message error">%1$s</div>%2$s',
-			apply_filters( 'the_content', str_replace( '{attempts}', $this->options['login_limit'], $this->options['error_text'] ) ),
-			$message
+		printf(
+			'<div class="error">
+				<p>%1$s</p>
+			</div>',
+			sprintf(
+				__( '%1$s requires %2$s version %3$s or greater. Please update to a later version of %2$s before using this plugin.', 'invalid-login-redirect' ),
+				'<strong>' . __( 'Invalid Login Redirect', 'invalid-login-redirect' ) . '</strong>',
+				esc_html( $flag ),
+				esc_html( $version )
+			)
 		);
 
 	}
@@ -257,100 +160,7 @@ class Invalid_Login_Redirect {
 			esc_html__( 'Settings', 'invalid-login-redirect' )
 		);
 
-		return array_merge( $links, $custom_links );
-
-	}
-
-	/**
-	 * Generate the redirect URL
-	 *
-	 * @return string
-	 *
-	 * @since 0.0.1
-	 */
-	public function build_redirect_url( $username = false ) {
-
-		if ( $username && site_url( 'wp-login.php?action=lostpassword' ) === $this->options['redirect_url'] ) {
-
-			$query_args = apply_filters( 'ilr_redirect_query_args', [
-				$this->reset_user_key => $username,
-			] );
-
-			return add_query_arg( $query_args, $this->options['redirect_url'] );
-
-		}
-
-		return $this->options['redirect_url'];
-
-	}
-
-	/**
-	 * Clear the login transients for the user after a successful login
-	 *
-	 * @param  string $username    The username
-	 * @param  obj    $user_object The user object
-	 *
-	 * @return bool
-	 *
-	 * @since 0.0.1
-	 */
-	public function clear_invalid_login_transients( $username, $user_object ) {
-
-		delete_transient( "invalid_login_{$user_object->ID}" );
-
-	}
-
-	/**
-	 * Log an invalid login attempt, update user meta
-	 *
-	 * @param  string  $username The username used to login
-	 *
-	 * @return int
-	 */
-	public function log_invalid_login_attempt( $username ) {
-
-		if ( ! self::$user_data ) {
-
-			return;
-
-		}
-
-		$user_id = self::$user_data->ID;
-
-		if ( false === ( $attempts = get_transient( "invalid_login_{$user_id}" ) ) ) {
-
-			$attempt = 1;
-
-		}
-
-		$attempt = isset( $attempt ) ? $attempt : (int) $attempts + 1;
-
-		set_transient(
-			"invalid_login_{$user_id}",
-			$attempt,
-			apply_filters( 'ilr_transient_duration', 1 * HOUR_IN_SECONDS )
-		);
-
-		return absint( $attempt );
-
-	}
-
-	/**
-	 * Return the user object
-	 *
-	 * @param  string $username The username/email to retreive
-	 *
-	 * @return array
-	 */
-	public function get_login_user_data( $username ) {
-
-		if ( empty( $user_obj = get_user_by( ( is_email( $username ) ? 'email' : 'login' ), $username ) ) ) {
-
-			return;
-
-		}
-
-		return $user_obj;
+		return $custom_links + $links;
 
 	}
 
