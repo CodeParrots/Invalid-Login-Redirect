@@ -8,7 +8,11 @@
  */
 final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 
-	public function __construct() {
+	private $options;
+
+	public function __construct( $options ) {
+
+		$this->options = $options;
 
 		include_once( ILR_MODULES . 'partials/logging-cpt.php' );
 
@@ -17,6 +21,8 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 		add_action( 'ilr_options_section', [ $this, 'option_section' ] );
 
 		add_action( 'ilr_handle_invalid_login', [ $this, 'log_invalid_password' ], 10, 4 );
+
+		add_action( 'wp_dashboard_setup', [ $this, 'ilr_admin_widget' ] );
 
 	}
 
@@ -73,6 +79,12 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 	 * @since 1.0.0
 	 */
 	public function log_invalid_password( $username, $attempt_number, $error_object, $user_data ) {
+
+		if ( ! $this->is_option_enabled( 'logging', 'invalid_password' ) ) {
+
+			return;
+
+		}
 
 		$this->log_attempt( [
 			'username'   => $username,
@@ -157,6 +169,68 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 
 	}
 
+	/**
+	 * Register the admin widget
+	 *
+	 * @return null
+	 *
+	 * @since 1.0.0
+	 */
+	public function ilr_admin_widget() {
+
+		if ( ! $this->is_option_enabled( 'logging', 'dashboard_widget' ) ) {
+
+			return;
+
+		}
+
+		global $wp_meta_boxes;
+
+		wp_add_dashboard_widget(
+			'ilr_logging_widget',
+			sprintf(
+				__( 'Invalid Login Attempts', 'invalid-login-redirect' ) . '%s',
+				'<small style="float: right; margin-top: 2px;"><a href="' . admin_url( 'tools.php?page=invalid-login-redirect&tab=logging' ) . '">' . esc_html__( 'view full log', 'invalid-login-redirect' ) . '</a></small>'
+			),
+			[ $this, 'ilr_admin_Widget_content' ]
+		);
+
+	}
+
+	/**
+	 * Content for admin widget
+	 *
+	 * @return mixed
+	 *
+	 * @since 1.0.0
+	 */
+	public function ilr_admin_Widget_content() {
+
+		include_once( ILR_MODULES . 'partials/logging-dashboard-widget.php' );
+
+	}
+
+	/**
+	 * Helper function to check if the dashboard widget option is active
+	 *
+	 * @return boolean
+	 *
+	 * @since 1.0.0
+	 */
+	private function is_option_enabled( $addon, $option = false ) {
+
+		$addon_name = sanitize_title( $addon );
+
+		if ( $addon && ! $option ) {
+
+			return isset( $this->options['addons'][ $addon_name ]['options'] );
+
+		}
+
+		return ( isset( $this->options['addons'][ $addon_name ]['options'] ) && $this->options['addons'][ $addon_name ]['options'][ $option ] );
+
+	}
+
 }
 
-$ilr_logging = new Invalid_Login_Redirect_Logging();
+$ilr_logging = new Invalid_Login_Redirect_Logging( $this->options );

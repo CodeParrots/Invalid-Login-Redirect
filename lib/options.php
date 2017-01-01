@@ -84,6 +84,24 @@ class Invalid_Login_Redirect_Settings {
 
 					<a class="logo-link"><img src="<?php echo ILR_IMAGES . 'logo.png'; ?>" class="logo" /></a>
 
+					<?php
+
+					printf(
+						'<span class="badge version">v%s</span>',
+						$this->version
+					);
+
+					if ( INVALID_LOGIN_REDIRECT_DEVELOPER ) {
+
+						printf(
+							'<span class="badge developer">%s</span>',
+							esc_html__( 'Developer', 'invalid-login-redirect' )
+						);
+
+					}
+
+					?>
+
 				</div>
 
 				<ul class="links">
@@ -113,19 +131,21 @@ class Invalid_Login_Redirect_Settings {
 
 							<?php do_settings_sections( 'invalid-login-redirect' ); ?>
 
+							<?php submit_button( esc_html__( 'Save Settings', 'invalid-login-redirect' ) ); ?>
+
 						</div>
 
 						<div class="add-ons add-on <?php if ( ( $this->tab && 'add-ons' !== $this->tab ) || ! $this->tab ) { echo 'hidden'; } ?>">
 
 							<?php do_settings_sections( 'invalid-login-redirect-addons' ); ?>
 
+							<?php submit_button( esc_html__( 'Save Settings', 'invalid-login-redirect' ) ); ?>
+
 						</div>
 
 						<?php
 
 						do_action( 'ilr_options_section', $this->tab );
-
-						submit_button();
 
 					?>
 
@@ -470,21 +490,31 @@ class Invalid_Login_Redirect_Settings {
 
 			}
 
+			$in_progress = ( ( isset( $addon_data['in_progress'] ) && $addon_data['in_progress'] ) );
+
+			if ( INVALID_LOGIN_REDIRECT_DEVELOPER ) {
+
+				$in_progress = false;
+
+			}
+
 			printf(
-				'<div class="col ilr-notice">
+				'<div class="col ilr-notice %1$s">
 					<div class="checkbox-toggle">
-						<input class="tgl tgl-skewed %1$s" name="invalid-login-redirect[addons][%2$s][file]" id="invalid-login-redirect[addons][%2$s][file]" type="checkbox" value="%3$s" %4$s />
-						<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][%2$s][file]"></label>
+						<input class="tgl tgl-skewed %2$s" name="invalid-login-redirect[addons][%3$s][file]" id="invalid-login-redirect[addons][%3$s][file]" type="checkbox" value="%4$s" %5$s %6$s />
+						<label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="invalid-login-redirect[addons][%3$s][file]"></label>
 					</div>
-					<h3>%5$s</h3>
-					<p class="description">%6$s</p>
-					%7$s
+					<h3>%7$s</h3>
+					<p class="description">%8$s</p>
+					%9$s
 				</div>',
+				$in_progress ? 'in-progress' : '',
 				empty( $sub_options ) ? '' : 'has-sub-options_js',
 				esc_attr( sanitize_title( $addon_name ) ),
 				esc_attr( $addon_data['file'] ),
 				checked( array_key_exists( sanitize_title( $addon_name ), $this->options['addons'] ), 1, false ),
-				esc_html( $addon_name ),
+				$in_progress ? 'disabled="disabled"' : '',
+				esc_html( $addon_name ) . ( $in_progress ? '<span class="badge in-progress">' . __( 'in progress', 'invalid-login-redirect' ) . '</span>' : '' ),
 				esc_html( $addon_data['description'] ),
 				$sub_options
 			);
@@ -504,7 +534,6 @@ class Invalid_Login_Redirect_Settings {
 
 		return [
 			__( 'Logging', 'invalid-login-redirect' ) => [
-				'banner'      => '',
 				'file'        => 'class-logging.php',
 				'description' => __( 'Start logging each time an invalid user attempts to login.', 'invalid-login-redirect' ),
 				'sub_options' => [
@@ -512,11 +541,16 @@ class Invalid_Login_Redirect_Settings {
 						'id'          => 'invalid_password',
 						'description' => __( 'Log invalid password entries. This will only log entries for registered users who enter invalid passwords.', 'invalid-login-redirect' ),
 					],
-					__( 'Dashboard Widget', 'invalid-login-redirect' ) => [
+					sprintf( __( 'Dashboard Widget %s', 'invalid-login-redirect' ), '<span class="badge widget">' . __( 'widget', 'invalid-login-redirect' ) . '</span>' ) => [
 						'id'          => 'dashboard_widget',
 						'description' => __( 'This activates the dashboard widget so that users can easily see login attempts as soon as they enter the site.', 'invalid-login-redirect' ),
 					],
 				],
+			],
+			__( 'Prevent Logins', 'invalid-login-redirect' ) => [
+				'file'        => 'class-prevent-logins.php',
+				'description' => __( 'Prevent specific users and IP addresses from logging into the site.', 'invalid-login-redirect' ),
+				'in_progress' => true,
 			],
 		];
 

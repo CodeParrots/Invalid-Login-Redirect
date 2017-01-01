@@ -48,10 +48,9 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 		if ( $user_obj ) {
 
 			$actions['view'] = sprintf(
-				'<small><a href="?page=%s&action=%s&movie=%s">' . esc_html__( 'View User', 'invalid-login-redirect' ) . '</a></small>',
-				$_REQUEST['page'],
-				'edit',
-				$item['ID']
+				'<small><a href="user-edit.php?user_id=%1$s">%2$s</a></small>',
+				absint( $user_obj->ID ),
+				esc_html__( 'View User', 'invalid-login-redirect' )
 			);
 
 		}
@@ -62,6 +61,47 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 			'%1$s %2$s',
 			$item['username'],
 			$this->row_actions( $actions )
+		);
+
+	}
+
+	function column_type( $item ) {
+
+		switch ( $item['type'] ) {
+
+			case 'invalid_password':
+
+				$type = [
+					'class' => 'invalid-password',
+					'text'  => __( 'Invalid Password', 'invalid-login-redirect' ),
+				];
+
+				break;
+
+		}
+
+		return sprintf(
+			'<div class="badge %1$s">%2$s</div>',
+			esc_attr( $type['class'] ),
+			esc_html( $type['text'] )
+		);
+
+	}
+
+	function column_ip_address( $item ) {
+
+		$actions = [];
+
+		$actions['loopkup'] = sprintf(
+			'<small><a href="http://geomaplookup.net/?ip=%1$s">%2$s</a></small>',
+			$item['ip_address'],
+			esc_html__( 'Loopkup IP', 'invalid-login-redirect' )
+		);
+
+		return sprintf(
+			'%1$s %2$s',
+			$item['ip_address'],
+			$this->row_actions( apply_filters( 'ilr_ip_address_column_actions', $actions ) )
 		);
 
 	}
@@ -200,7 +240,7 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 	**************************************************************************/
 	function prepare_items() {
 
-		$per_page = 5;
+		$per_page = apply_filters( 'ilr_log_table_limit', 50 );
 
 		$columns = $this->get_columns();
 

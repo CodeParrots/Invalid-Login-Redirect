@@ -77,6 +77,12 @@ class Invalid_Login_Redirect {
 
 		}
 
+		if ( ! defined( 'INVALID_LOGIN_REDIRECT_DEVELOPER' ) ) {
+
+			define( 'INVALID_LOGIN_REDIRECT_DEVELOPER', false );
+
+		}
+
 		require_once( plugin_dir_path( __FILE__ ) . '/lib/options.php' );
 
 		new Invalid_Login_Redirect_Settings( $this->options, $this->version, $this->script_suffix );

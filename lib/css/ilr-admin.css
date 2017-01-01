@@ -18,6 +18,15 @@ body.tools_page_invalid-login-redirect div#wpcontent {
 	box-shadow: 0 1px 0 rgba(200,215,225,0.5), 0 1px 2px #e9eff3;
 }
 
+	.ilr-banner .badge {
+		margin: 0 10px 0 0;
+		padding: 5px 9px;
+		border-radius: 2px;
+		background: #e6ecf1;
+		color: #647a88;
+		font-size: 10px;
+	}
+
 	.ilr-banner .inner-container,
 	.ilr-settings-container {
 		padding: .375rem 0;
@@ -123,6 +132,51 @@ body.tools_page_invalid-login-redirect .col {
 	font-size: 14px;
 	animation: appear .3s ease-in-out;
 }
+
+body.tools_page_invalid-login-redirect div.logging.add-on .badge {
+	border-radius: 2px;
+	color: #fff;
+	padding: 3px 5px;
+	font-size: 10px;
+	text-align: center;
+	display: inherit;
+	border: 1px solid transparent;
+}
+
+	body.tools_page_invalid-login-redirect div.logging.add-on .badge.invalid-password {
+		background: #ff8080;
+		border-color: #de7676;
+	}
+
+.ilr-notice.in-progress {
+	opacity: 0.8;
+}
+
+.ilr-notice .badge {
+	color: #fff;
+	border-radius: 3px;
+	font-size: 10px;
+	padding: 3px 5px;
+	margin-left: 3px;
+	text-align: center;
+	border: 1px solid transparent;
+}
+
+.ilr-notice h3 .badge {
+	position: relative;
+	top: -2px;
+	font-size: 10px;
+	margin-left: 5px;
+}
+
+	.ilr-notice .badge.widget {
+		background: #004080;
+	}
+
+	.ilr-notice .badge.in-progress {
+		background: #ecbb7b;
+		border-color: #d0a46c;
+	}
 
 .ilr-notice .sub-options .row {
 	margin: 1em 0;
@@ -330,6 +384,11 @@ body.tools_page_invalid-login-redirect .col {
 			left: -10%;
 		}
 
+		.tgl-skewed:disabled + .tgl-btn {
+			background: grey;
+			opacity: 0.5;
+		}
+
 		.tgl-skewed:checked + .tgl-btn {
 			background: #86d993;
 		}
@@ -388,7 +447,7 @@ body.tools_page_invalid-login-redirect .col {
 			margin-top: 0;
 		}
 
-	body.tools_page_invalid-login-redirect .col:first-child {
+	body.tools_page_invalid-login-redirect .col {
 		margin-left: 0;
 	}
 

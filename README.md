@@ -42,9 +42,25 @@ Each option is individually filtered, allowing you to override them as needed.
 **Other Filters**
 - `ilr_reset_user_key`
 - `ilr_redirect_query_args`
+- `ilr_username_column_actions`
+- `ilr_ip_address_column_actions`
+- `ilr_log_table_limit`
 
 **Transient**
 - `ilr_transient_duration` - The length of time that the login attempt is stored for each user. By default, the login transients are stored in the database for 1 hour.
+
+#### Developer Mode
+
+To enable developer mode, you can create a `mu-plugin` that defines the `INVALID_LOGIN_REDIRECT_DEVELOPER` constant as true. This can also be added to the current themes **functions.php** file to enable developer mode.
+
+Developer mode should be used during development of additional add-ons, or for testing purposes.
+
+**Example:**
+```php
+define( 'INVALID_LOGIN_REDIRECT_DEVELOPER', true );
+```
+
+You can confirm that developer mode is enabled by viewing the Invalid Login Redirect settings page inside of 'Tools > Invalid Login Redirect'. In the header, you should see a badge visible next to the plugin version that says 'Developer'.
 
 #### Actions
 
