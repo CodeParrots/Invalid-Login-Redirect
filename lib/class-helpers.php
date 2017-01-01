@@ -76,6 +76,25 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 
 	}
 
+	/**
+	 * query the logs
+	 *
+	 * @param integer $post_count number of posts displayed
+	 *
+	 * @return object
+	 */
+	public function get_ilr_log( $post_count = -1 ) {
+
+		return new WP_Query( [
+			'post_type'      => 'ilr_log',
+			'meta_key'       => 'ilr_log_timestamp',
+			'orderby'        => 'meta_value_num',
+			'order'          => 'DESC',
+			'posts_per_page' => (int) $post_count,
+		] );
+
+	}
+
 }
 
 $ilr_helpers = new ILR_Helpers( $this->options );
