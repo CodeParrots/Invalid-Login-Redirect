@@ -145,7 +145,7 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 		$actions = [];
 
 		$actions['loopkup'] = sprintf(
-			'<small><a href="http://geomaplookup.net/?ip=%1$s">%2$s</a></small>',
+			'<small><a href="http://geomaplookup.net/?ip=%1$s" target="_blank">%2$s</a></small>',
 			$item['ip_address'],
 			esc_html__( 'Loopkup IP', 'invalid-login-redirect' )
 		);
