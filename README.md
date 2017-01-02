@@ -45,6 +45,8 @@ Each option is individually filtered, allowing you to override them as needed.
 - `ilr_username_column_actions`
 - `ilr_ip_address_column_actions`
 - `ilr_log_table_limit`
+- `ilr_sanitize_options`
+- `ilr_invalid_login_redirect`
 
 **Transient**
 - `ilr_transient_duration` - The length of time that the login attempt is stored for each user. By default, the login transients are stored in the database for 1 hour.

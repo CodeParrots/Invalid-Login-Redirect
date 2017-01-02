@@ -128,6 +128,21 @@ body.tools_page_invalid-login-redirect .col {
 		font-size: 15px;
 	}
 
+.ilr-settings-container .role-redirects.add-on .ilr-notice .fields label {
+	color: #333;
+	display: block;
+	margin-top: .75em;
+	margin-bottom: 5px;
+}
+
+.ilr-settings-container .role-redirects.add-on .ilr-notice .apply-to-all {
+	font-size: 10px;
+	display: inline-block;
+	position: relative;
+	top: -1px;
+	margin-right: 5px;
+}
+
 .ilr-settings-container .add-ons .form-table tr,
 .ilr-settings-container .add-ons .form-table td {
 	padding: 0;

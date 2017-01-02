@@ -104,7 +104,7 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 	 *
 	 * @param object $user User object
 	 *
-	 * @return string/array
+	 * @return array
 	 *
 	 * @since 1.0.0
 	 */

@@ -87,6 +87,19 @@ class Invalid_Login_Redirect {
 		// Base module, invalid login redirects
 		include_once( ILR_MODULES . 'class-login-redirect.php' );
 
+		$this->load_modules();
+
+	}
+
+	/**
+	 * Load the modules
+	 *
+	 * @return null
+	 *
+	 * @since 1.0.0
+	 */
+	private function load_modules() {
+
 		if ( empty( $this->options['addons'] ) ) {
 
 			return;
