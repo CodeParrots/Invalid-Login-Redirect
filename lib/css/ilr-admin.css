@@ -135,6 +135,14 @@ body.tools_page_invalid-login-redirect .col {
 	margin-bottom: 5px;
 }
 
+	.ilr-settings-container .role-redirects.add-on .ilr-notice .fields .dashicons-yes {
+		color: #afdc9c;
+	}
+
+	.ilr-settings-container .role-redirects.add-on .ilr-notice .fields .dashicons-no-alt {
+		color: #ffafaf;
+	}
+
 .ilr-settings-container .role-redirects.add-on .ilr-notice .apply-to-all {
 	font-size: 10px;
 	display: inline-block;

@@ -66,7 +66,7 @@ final class Invalid_Login_Redirect_User_Role_Redirects extends Invalid_Login_Red
 
 					<?php
 					printf(
-						__( 'Specify a custom URL to redirect to for each user role on your site. The "Invalid Login Redirect" option is where registered users will be redirected to after %s attempts logging in with an invalid password. Leave the field blank to fallback to the defaults.', 'invalid-login-redirect' ),
+						__( 'Specify a custom URL to redirect each user role to on your site. The "Invalid Login" field is where registered users will be redirected to after %s attempts lof ogging in with an invalid password. Leave the field blank to use the plugin defaults.', 'invalid-login-redirect' ),
 						'<strong>' . absint( $this->options['login_limit'] ) . '</strong>'
 					); ?>
 
@@ -234,21 +234,21 @@ final class Invalid_Login_Redirect_User_Role_Redirects extends Invalid_Login_Red
 				%1$s %2$s
 				<div class="fields">
 
-					<label for="invalid-login-redirect[addons][user-role-redirects][options][%3$s][invalid-login]">%4$s</label>
-					<input type="text" id="invalid-login-redirect[addons][user-role-redirects][options][%3$s][invalid-login]" name="invalid-login-redirect[addons][user-role-redirects][options][%3$s][invalid-login]" class="widefat valid-login" value="%5$s" placeholder="%6$s" />
-
 					<label for="invalid-login-redirect[addons][user-role-redirects][options][%3$s][valid-login]">%7$s</label>
 					<input type="text" id="invalid-login-redirect[addons][user-role-redirects][options][%3$s][valid-login]" name="invalid-login-redirect[addons][user-role-redirects][options][%3$s][valid-login]" class="widefat invalid-login" value="%8$s" placeholder="%9$s" />
+
+					<label for="invalid-login-redirect[addons][user-role-redirects][options][%3$s][invalid-login]">%4$s</label>
+					<input type="text" id="invalid-login-redirect[addons][user-role-redirects][options][%3$s][invalid-login]" name="invalid-login-redirect[addons][user-role-redirects][options][%3$s][invalid-login]" class="widefat valid-login" value="%5$s" placeholder="%6$s" />
 
 				</div>
 			</div>',
 			ucwords( $role_data['name'] ),
 			( $first === $role ) ? '<a href="#" class="apply-to-all">' . __( 'Apply to All Below', 'invalid-login-redirect' ) . '</a>' : '',
 			sanitize_title( $role ),
-			sprintf( __( '%s Invalid Login Redirect', 'invalid-login-redirect' ), '<span class="dashicons dashicons-no-alt"></span>' ),
+			sprintf( __( '%s Invalid Login', 'invalid-login-redirect' ), '<span class="dashicons dashicons-no-alt"></span>' ),
 			isset( $this->options['addons']['user-role-redirects']['options'][ $role ]['invalid-login'] ) ? esc_url( $this->options['addons']['user-role-redirects']['options'][ $role ]['invalid-login'] ) : '',
 			esc_attr( $this->options['redirect_url'] ),
-			sprintf( __( '%s Successful Login Redirect', 'invalid-login-redirect' ), '<span class="dashicons dashicons-yes"></span>' ),
+			sprintf( __( '%s Successful Login', 'invalid-login-redirect' ), '<span class="dashicons dashicons-yes"></span>' ),
 			isset( $this->options['addons']['user-role-redirects']['options'][ $role ]['valid-login'] ) ? esc_url( $this->options['addons']['user-role-redirects']['options'][ $role ]['valid-login'] ) : '',
 			esc_attr( admin_url() )
 		);
