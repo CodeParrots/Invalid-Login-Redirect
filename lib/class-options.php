@@ -274,7 +274,7 @@ class Invalid_Login_Redirect_Settings {
 
 		$new_input['addons'] = (array) $input['addons'];
 
-		return $new_input;
+		return apply_filters( 'ilr_sanitize_options', $new_input );
 
 	}
 
@@ -563,6 +563,10 @@ class Invalid_Login_Redirect_Settings {
 						'description' => __( 'This activates the dashboard widget so that users can easily see login attempts as soon as they enter the site.', 'invalid-login-redirect' ),
 					],
 				],
+			],
+			__( 'User Role Redirects', 'invalid-login-redirect' ) => [
+				'file'        => 'class-user-role-redirects.php',
+				'description' => __( 'Redirect specific user roles to certain areas of your site after a successful login.', 'invalid-login-redirect' ),
 			],
 			__( 'Prevent Logins', 'invalid-login-redirect' ) => [
 				'file'        => 'class-prevent-logins.php',

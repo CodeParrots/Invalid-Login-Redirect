@@ -87,7 +87,7 @@ final class Invalid_Login_Redirect_Redirection extends Invalid_Login_Redirect {
 
 		delete_transient( 'invalid_login_' . self::$user_data->ID );
 
-		wp_redirect( esc_url_raw( $this->build_redirect_url( $username ) ) );
+		apply_filters( 'ilr_invalid_login_redirect', wp_redirect( esc_url_raw( $this->build_redirect_url( $username ) ) ), self::$user_data );
 
 		exit;
 

@@ -69,6 +69,8 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 	 * @param integer $user_id The user ID.
 	 *
 	 * @return bool/array
+	 *
+	 * @since 1.0.0
 	 */
 	public function get_login_user_transient( $user_id ) {
 
@@ -77,11 +79,13 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 	}
 
 	/**
-	 * query the logs
+	 * Query the logs
 	 *
 	 * @param integer $post_count number of posts displayed
 	 *
 	 * @return object
+	 *
+	 * @since 1.0.0
 	 */
 	public function get_ilr_log( $post_count = -1 ) {
 
@@ -92,6 +96,23 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 			'order'          => 'DESC',
 			'posts_per_page' => (int) $post_count,
 		] );
+
+	}
+
+	/**
+	 * Get the user role(s)
+	 *
+	 * @param object $user User object
+	 *
+	 * @return array
+	 *
+	 * @since 1.0.0
+	 */
+	public function get_ilr_user_role( $user = null ) {
+
+		$user = $user ? new WP_User( $user ) : wp_get_current_user();
+
+		return $user->roles ? $user->roles : false;
 
 	}
 
