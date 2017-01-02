@@ -1,4 +1,9 @@
 <?php
+/**
+ * Register the ilr_log custom post type
+ *
+ * @since 1.0.0
+ */
 
 $labels = array(
 	'name'                  => _x( 'Logs', 'Post Type General Name', 'invalid-login-redirect' ),

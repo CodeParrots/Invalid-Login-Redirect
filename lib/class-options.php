@@ -564,6 +564,11 @@ class Invalid_Login_Redirect_Settings {
 					],
 				],
 			],
+			__( 'User Role Redirects', 'invalid-login-redirect' ) => [
+				'file'        => 'class-prevent-logins.php',
+				'description' => __( 'Redirect specific user roles to certain areas of your site after a successful login.', 'invalid-login-redirect' ),
+				'in_progress' => true,
+			],
 			__( 'Prevent Logins', 'invalid-login-redirect' ) => [
 				'file'        => 'class-prevent-logins.php',
 				'description' => __( 'Prevent specific users and IP addresses from logging into the site.', 'invalid-login-redirect' ),
