@@ -388,7 +388,7 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 				esc_html( $type['tooltip'] )
 			) : '';
 
-			printf(
+			return sprintf(
 				'<div class="badge %1$s">%2$s</div>%3$s',
 				esc_attr( $type['class'] ),
 				wp_kses_post( $type['text'] ),

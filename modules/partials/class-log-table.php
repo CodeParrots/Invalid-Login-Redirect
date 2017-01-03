@@ -71,7 +71,7 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 
 	function column_type( $item ) {
 
-		Invalid_Login_Redirect_Logging::ilr_get_table_badge( $item['type'], $item );
+		return Invalid_Login_Redirect_Logging::ilr_get_table_badge( $item['type'], $item );
 
 	}
 
