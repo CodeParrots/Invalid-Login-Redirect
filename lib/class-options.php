@@ -568,6 +568,10 @@ class Invalid_Login_Redirect_Settings {
 				'file'        => 'class-user-role-redirects.php',
 				'description' => __( 'Redirect specific user roles to certain areas of your site after a successful login.', 'invalid-login-redirect' ),
 			],
+			__( 'Notifications', 'invalid-login-redirect' ) => [
+				'file'        => 'class-notifications.php',
+				'description' => __( 'Display a notice to the admin users whenever a logged action occurs.', 'invalid-login-redirect' ),
+			],
 			__( 'Prevent Logins', 'invalid-login-redirect' ) => [
 				'file'        => 'class-prevent-logins.php',
 				'description' => __( 'Prevent specific users and IP addresses from logging into the site.', 'invalid-login-redirect' ),

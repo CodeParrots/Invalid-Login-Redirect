@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 }
 
+<<<<<<< HEAD
 $logs = parent::$helpers->get_ilr_log( 10 );
 
 if ( $logs->have_posts() ) {
@@ -30,6 +31,11 @@ if ( $logs->have_posts() ) {
 	while ( $logs->have_posts() ) {
 
 		$logs->the_post();
+=======
+$logs = parent::$helpers->get_ilr_log( [
+	'posts_per_page' => 10,
+] );
+>>>>>>> ae136d92ea4a32db0a5267b9fc5d5b5fb94dd52a
 
 		echo '<tr class="ilr-widget-row">
 			<td class="ilr-widget-cell">' . get_post_meta( get_the_ID(), 'ilr_log_username', true ) . '</td>
