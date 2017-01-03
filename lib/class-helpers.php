@@ -87,15 +87,19 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 	 *
 	 * @since 1.0.0
 	 */
-	public function get_ilr_log( $post_count = -1 ) {
+	public function get_ilr_log( $query_args = [] ) {
 
-		return new WP_Query( [
+		$default_args = [
 			'post_type'      => 'ilr_log',
 			'meta_key'       => 'ilr_log_timestamp',
 			'orderby'        => 'meta_value_num',
 			'order'          => 'DESC',
-			'posts_per_page' => (int) $post_count,
-		] );
+			'posts_per_page' => -1,
+		];
+
+		$args = wp_parse_args( $query_args, $default_args );
+
+		return new WP_Query( $args );
 
 	}
 

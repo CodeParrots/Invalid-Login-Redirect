@@ -11,7 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 }
 
-$logs = parent::$helpers->get_ilr_log( 2 );
+$logs = parent::$helpers->get_ilr_log( [
+	'posts_per_page' => 10,
+] );
 
 ?>
 

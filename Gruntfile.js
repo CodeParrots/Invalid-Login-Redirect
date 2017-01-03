@@ -14,6 +14,12 @@ module.exports = function( grunt ) {
 					'lib/js/ilr-admin.min.js': [
 						'lib/js/ilr-admin.js'
 					],
+					'modules/partials/js/ilr-notifications.min.js': [
+						'modules/partials/js/ilr-notifications.js'
+					],
+					'modules/partials/js/jquery-growl.min.js': [
+						'modules/partials/js/jquery-growl.js'
+					],
 				}
 			}
 		},
@@ -58,6 +64,12 @@ module.exports = function( grunt ) {
 						[
 							'lib/css/ilr-styles-rtl.css'
 						],
+					},
+					{
+						'modules/partials/css/ilr-notifications.min.css':
+						[
+							'modules/partials/css/ilr-notifications.css'
+						],
 					}
 				]
 			}
@@ -92,7 +104,7 @@ module.exports = function( grunt ) {
 		// watch our project for changes
 		watch: {
 			admin_css: { // admin css
-				files: [ 'lib/css/*.css' ],
+				files: [ 'lib/css/*.css', 'modules/partials/css/*.css' ],
 				tasks: [ 'cssjanus', 'cssmin', 'usebanner' ],
 				options: {
 					spawn: false,
@@ -100,7 +112,7 @@ module.exports = function( grunt ) {
 				},
 			},
 			admin_js: { // admin css
-				files: [ 'lib/js/*.js', 'lib/js/!*.min.js' ],
+				files: [ 'lib/js/*.js', 'modules/partials/js/*.js' ],
 				tasks: [ 'uglify', 'usebanner' ],
 				options: {
 					spawn: false,

@@ -195,6 +195,8 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 
 			} // @codingStandardsIgnoreLine
 
+			do_action( 'ilr_log_store_meta', $post_id );
+
 		}
 
 	}
