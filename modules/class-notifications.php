@@ -19,11 +19,11 @@ final class Invalid_Login_Redirect_Notifications extends Invalid_Login_Redirect 
 
 		$this->options = $options;
 
-		add_action( 'ilr_log_store_meta', [ $this, 'ravs_notify_published_post' ] );
+		add_action( 'ilr_log_update_meta', [ $this, 'ravs_notify_published_post' ] );
 
-		add_filter( 'heartbeat_received', [ $this, 'ravs_heartbeat_received' ], 10, 2 );
+		add_filter( 'heartbeat_received',  [ $this, 'ravs_heartbeat_received' ], 10, 2 );
 
-		add_action( 'wp_enqueue_scripts', [ $this, 'ravs_notify_init' ] );
+		add_action( 'wp_enqueue_scripts',  [ $this, 'ravs_notify_init' ] );
 
 	}
 

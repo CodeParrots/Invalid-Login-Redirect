@@ -21,6 +21,13 @@ The text domain for the strings is `invalid-login-redirect`.
 
 ## Light Documentation
 
+### Actions
+
+- `ilr_options_section`
+- `ilr_invalid_login`
+- `ilr_handle_invalid_login`
+- `ilr_log_update_meta`
+
 #### Filters
 
 **Options**
