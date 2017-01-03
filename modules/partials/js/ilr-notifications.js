@@ -14,7 +14,6 @@ jQuery( document ).ready( function() {
 		jQuery.growl.notice( {
 			title:        title,
 			message:      text,
-			duration:     60000,
 			location:     'br',
 			size:         'small',
 			delayOnHover: true,
