@@ -21,7 +21,9 @@ ob_start();
 
 if ( $logs->have_posts() ) {
 
-	echo '<table class="ilr-widget-table wp-list-table widefat fixed striped logs" style="width: 100%;">
+	?>
+
+	<table class="ilr-widget-table wp-list-table widefat fixed striped logs" style="width: 100%;">
 		<thead>
 			<tr>
 				<th class="ilr-widget-cell">Username</th>
@@ -29,22 +31,40 @@ if ( $logs->have_posts() ) {
 				<th class="ilr-widget-cell" style="text-align:center!important;">Attempt</th>
 				<th class="ilr-widget-cell">Type<br></th>
 			</tr>
-		</thead>';
+		</thead>
+
+	<?php
 
 	while ( $logs->have_posts() ) {
 
 		$logs->the_post();
 
-		echo '<tr class="ilr-widget-row">
-			<td class="ilr-widget-cell">' . get_post_meta( get_the_ID(), 'ilr_log_username', true ) . '</td>
-			<td class="ilr-widget-cell">' . date( get_option( 'date_format' ), get_post_meta( get_the_ID(), 'ilr_log_timestamp', true ) ) . ' &ndash; ' . date( get_option( 'time_format' ), get_post_meta( get_the_ID(), 'ilr_log_timestamp', true ) ) . '</td>
-			<td class="ilr-widget-cell" style="text-align:center!important;">' . get_post_meta( get_the_ID(), 'ilr_log_attempt', true ) . '</td>
-			<td class="ilr-widget-cell">' . Invalid_Login_Redirect_Logging::ilr_get_table_badge( get_post_meta( get_the_ID(), 'ilr_log_type', true ), [ 'username' => get_post_meta( get_the_ID(), 'ilr_log_username', true ), 'type' => get_post_meta( get_the_ID(), 'ilr_log_type', true ) ] ) . '</td>
-		</tr>';
+		$data = [
+			'username'  => get_post_meta( get_the_ID(), 'ilr_log_username', true ),
+			'timestamp' => get_post_meta( get_the_ID(), 'ilr_log_timestamp', true ),
+			'attempt'   => get_post_meta( get_the_ID(), 'ilr_log_attempt', true ),
+			'type'      => get_post_meta( get_the_ID(), 'ilr_log_type', true ),
+		];
+
+		?>
+
+		<tr class="ilr-widget-row">
+			<td class="ilr-widget-cell"><?php echo esc_html( $data['username'] ); ?></td>
+			<td class="ilr-widget-cell"><?php echo esc_html( date( get_option( 'date_format' ), $data['timestamp'] ) . ' &ndash; ' . date( get_option( 'time_format' ), $data['timestamp'] ) ); ?></td>
+			<td class="ilr-widget-cell" style="text-align:center!important;"><?php echo esc_html( $data['attempt'] ); ?></td>
+			<td class="ilr-widget-cell"><?php echo wp_kses_post( Invalid_Login_Redirect_Logging::ilr_get_table_badge( $data['type'], $data ) ); ?></td>
+		</tr>
+
+		<?php
 
 	}
 
-	echo '</table>';
+	?>
+
+	</table>
+
+
+	<?php
 
 	wp_reset_postdata();
 
