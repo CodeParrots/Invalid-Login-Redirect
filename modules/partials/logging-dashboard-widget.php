@@ -20,10 +20,10 @@ if ( $logs->have_posts() ) {
 	echo '<table class="ilr-widget-table wp-list-table widefat fixed striped logs" style="width: 100%;">
 		<thead>
 		  <tr>
-		    <th class="tg-yw4l">Date/Time</th>
-		    <th class="tg-yw4l">Username</th>
-		    <th class="tg-yw4l">Attempt</th>
-		    <th class="tg-yw4l">Type<br></th>
+		    <th class="ilr-widget-cell">Username</th>
+		    <th class="ilr-widget-cell">Date/Time</th>
+		    <th class="ilr-widget-cell" style="text-align:center!important;">Attempt</th>
+		    <th class="ilr-widget-cell">Type<br></th>
 		  </tr>
 		</thead>';
 
@@ -34,7 +34,7 @@ if ( $logs->have_posts() ) {
 		echo '<tr class="ilr-widget-row">
 						<td class="ilr-widget-cell">' . get_post_meta( get_the_ID(), 'ilr_log_username', true ) . '</td>
 				    <td class="ilr-widget-cell">' . date( get_option( 'date_format' ), get_post_meta( get_the_ID(), 'ilr_log_timestamp', true ) ) . ' &ndash; ' . date( get_option( 'time_format' ), get_post_meta( get_the_ID(), 'ilr_log_timestamp', true ) ) . '</td>
-				    <td class="ilr-widget-cell">' . get_post_meta( get_the_ID(), 'ilr_log_attempt', true ) . '</td>
+				    <td class="ilr-widget-cell" style="text-align:center!important;">' . get_post_meta( get_the_ID(), 'ilr_log_attempt', true ) . '</td>
 				    <td class="ilr-widget-cell">' . get_post_meta( get_the_ID(), 'ilr_log_type', true ) . '</td>
 		    </tr>';
 
