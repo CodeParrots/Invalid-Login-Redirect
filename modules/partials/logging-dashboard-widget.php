@@ -5,17 +5,19 @@
  * @since 1.0.0
  */
 
-wp_enqueue_style( 'ilr-login-style', ILR_URL . '/lib/css/ilr-admin.css' );
-
 if ( ! defined( 'ABSPATH' ) ) {
 
 	exit;
 
 }
 
+wp_enqueue_style( 'ilr-login-style', ILR_URL . '/lib/css/ilr-admin.css' );
+
 $logs = parent::$helpers->get_ilr_log( [
 	'posts_per_page' => 10,
 ] );
+
+ob_start();
 
 if ( $logs->have_posts() ) {
 
@@ -37,7 +39,7 @@ if ( $logs->have_posts() ) {
 			<td class="ilr-widget-cell">' . get_post_meta( get_the_ID(), 'ilr_log_username', true ) . '</td>
 			<td class="ilr-widget-cell">' . date( get_option( 'date_format' ), get_post_meta( get_the_ID(), 'ilr_log_timestamp', true ) ) . ' &ndash; ' . date( get_option( 'time_format' ), get_post_meta( get_the_ID(), 'ilr_log_timestamp', true ) ) . '</td>
 			<td class="ilr-widget-cell" style="text-align:center!important;">' . get_post_meta( get_the_ID(), 'ilr_log_attempt', true ) . '</td>
-			<td class="ilr-widget-cell">' . get_post_meta( get_the_ID(), 'ilr_log_type', true ) . '</td>
+			<td class="ilr-widget-cell">' . Invalid_Login_Redirect_Logging::ilr_get_table_badge( get_post_meta( get_the_ID(), 'ilr_log_type', true ), [ 'username' => get_post_meta( get_the_ID(), 'ilr_log_username', true ), 'type' => get_post_meta( get_the_ID(), 'ilr_log_type', true ) ] ) . '</td>
 		</tr>';
 
 	}
@@ -47,3 +49,5 @@ if ( $logs->have_posts() ) {
 	wp_reset_postdata();
 
 }
+
+return ob_get_contents();
