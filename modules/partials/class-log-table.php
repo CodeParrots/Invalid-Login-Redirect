@@ -71,76 +71,7 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 
 	function column_type( $item ) {
 
-		$item_type = array_map( function( $type ) use ( $item ) {
-
-			switch ( $type ) {
-
-				default:
-				case 'incorrect_password':
-
-					return [
-						'class' => 'invalid-password',
-						'text'  => __( 'Invalid Password', 'invalid-login-redirect' ),
-					];
-
-					break;
-
-				case 'invalid_username':
-
-					return [
-						'class' => 'invalid-username',
-						'text'  => __( 'Invalid Username', 'invalid-login-redirect' ),
-					];
-
-					break;
-
-				case 'admin_username':
-
-					return [
-						'class'   => 'admin-username',
-						'tooltip' => sprintf(
-							_x( 'A user tried to login to the site using the username "%s".', 'Username used to log in', 'invalid-login-redirect' ),
-							esc_html( $item['username'] )
-						),
-						'text'    => sprintf(
-							_x( '%s Admin Username', 'Dashicon warning icon.', 'invalid-login-redirect' ),
-							'<span class="dashicons dashicons-warning"></span>'
-						),
-					];
-
-					break;
-
-				case 'successful_login':
-
-					return [
-						'class'   => 'successful-login',
-						'text'    => sprintf(
-							_x( '%s Login', 'Dashicon yes icon.', 'invalid-login-redirect' ),
-							'<span class="dashicons dashicons-yes"></span>'
-						),
-					];
-
-					break;
-
-			} // @codingStandardsIgnoreLine
-
-		}, (array) $item['type'] );
-
-		foreach ( $item_type as $type ) {
-
-			$tooltip = isset( $type['tooltip'] ) ? sprintf(
-				'<span class="tip-content">%s</span>',
-				esc_html( $type['tooltip'] )
-			) : '';
-
-			printf(
-				'<div class="badge %1$s">%2$s</div>%3$s',
-				esc_attr( $type['class'] ),
-				wp_kses_post( $type['text'] ),
-				$tooltip
-			);
-
-		}
+		return Invalid_Login_Redirect_Logging::ilr_get_table_badge( $item['type'], $item );
 
 	}
 
@@ -319,6 +250,7 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 				$log_query->the_post();
 
 				$log_data[] = [
+					'ID'         => get_the_ID(),
 					'username'   => get_post_meta( get_the_ID(), 'ilr_log_username', true ),
 					'attempt'    => get_post_meta( get_the_ID(), 'ilr_log_attempt', true ),
 					'timestamp'  => get_post_meta( get_the_ID(), 'ilr_log_timestamp', true ),

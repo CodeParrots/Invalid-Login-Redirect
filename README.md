@@ -30,7 +30,7 @@ The text domain for the strings is `invalid-login-redirect`.
 
 #### Filters
 
-**Options**
+**Options** 
 
 Each option is individually filtered, allowing you to override them as needed.
 
