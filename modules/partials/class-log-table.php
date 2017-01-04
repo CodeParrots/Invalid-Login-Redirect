@@ -250,6 +250,7 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 				$log_query->the_post();
 
 				$log_data[] = [
+					'ID'         => get_the_ID(),
 					'username'   => get_post_meta( get_the_ID(), 'ilr_log_username', true ),
 					'attempt'    => get_post_meta( get_the_ID(), 'ilr_log_attempt', true ),
 					'timestamp'  => get_post_meta( get_the_ID(), 'ilr_log_timestamp', true ),
