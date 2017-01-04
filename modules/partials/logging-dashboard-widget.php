@@ -23,7 +23,7 @@ if ( $logs->have_posts() ) {
 
 	?>
 
-	<table class="ilr-widget-table wp-list-table widefat fixed striped logs" style="width: 100%;">
+	<table class="ilr-widget-table wp-list-table widefat fixed striped logs">
 		<thead>
 			<tr>
 				<th class="ilr-widget-cell"><?php esc_html_e( 'Username', 'invalid-login-redirect' ); ?></th>
