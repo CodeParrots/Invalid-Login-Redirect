@@ -526,7 +526,7 @@ class Invalid_Login_Redirect_Settings {
 				$in_progress ? 'disabled="disabled"' : '',
 				esc_html( $addon_name ) . ( $in_progress ? '<span class="badge in-progress">' . __( 'in progress', 'invalid-login-redirect' ) . '</span>' : '' ),
 				esc_html( $addon_data['description'] ),
-				! empty( $addon_data['notice'] ) ? '<span class="notice">' . $addon_data['notice'] . '</span>' : '',
+				! empty( $addon_data['notice'] ) ? '<p class="description notice">' . $addon_data['notice'] . '</p>' : '',
 				$sub_options
 			);
 
@@ -548,8 +548,9 @@ class Invalid_Login_Redirect_Settings {
 				'file'        => 'class-logging.php',
 				'description' => __( 'Start logging each time an invalid user attempts to login.', 'invalid-login-redirect' ),
 				'notice'      => ! username_exists( 'admin' ) ? sprintf(
-					__( 'The username %s is still registered on your site.', 'invalid-login-redirect' ),
-					'<strong>testing</strong>'
+					__( '%1$s Warning: The username %2$s is registered on your site.', 'invalid-login-redirect' ),
+					'<span class="dashicons dashicons-warning"></span>',
+					'<strong>admin</strong>'
 				) : '',
 				'sub_options' => [
 					__( 'Invalid Passwords', 'invalid-login-redirect' ) => [

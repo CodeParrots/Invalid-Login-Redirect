@@ -128,6 +128,22 @@ body.tools_page_invalid-login-redirect .col {
 		font-size: 15px;
 	}
 
+body.tools_page_invalid-login-redirect .col .notice {
+	color: #ffafaf;
+	box-shadow: none;
+	border: none;
+	padding-left: 0;
+	margin-top: 10px;
+	margin-bottom: 0;
+}
+
+	body.tools_page_invalid-login-redirect .col .notice .dashicons {
+		font-size: 15px;
+		height: 15px;
+		width: 15px;
+		line-height: 1.4;
+	}
+
 .ilr-settings-container .role-redirects.add-on .ilr-notice .fields label {
 	color: #333;
 	display: block;
