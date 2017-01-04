@@ -125,6 +125,12 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 
 		if ( 'admin' === $username ) {
 
+			if ( username_exists( 'admin' ) ) {
+
+				return;
+
+			}
+
 			$error_type = [
 				$error_type,
 				'admin_username',
