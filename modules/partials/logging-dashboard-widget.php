@@ -26,10 +26,10 @@ if ( $logs->have_posts() ) {
 	<table class="ilr-widget-table wp-list-table widefat fixed striped logs" style="width: 100%;">
 		<thead>
 			<tr>
-				<th class="ilr-widget-cell">Username</th>
-				<th class="ilr-widget-cell">Date/Time</th>
-				<th class="ilr-widget-cell" style="text-align:center!important;">Attempt</th>
-				<th class="ilr-widget-cell">Type<br></th>
+				<th class="ilr-widget-cell"><?php esc_html_e( 'Username', 'invalid-login-redirect' ); ?></th>
+				<th class="ilr-widget-cell"><?php esc_html_e( 'Date/Time', 'invalid-login-redirect' ); ?></th>
+				<th class="ilr-widget-cell num"><?php esc_html_e( 'Attempt', 'invalid-login-redirect' ); ?></th>
+				<th class="ilr-widget-cell"><?php esc_html_e( 'Type', 'invalid-login-redirect' ); ?></th>
 			</tr>
 		</thead>
 
@@ -51,7 +51,7 @@ if ( $logs->have_posts() ) {
 		<tr class="ilr-widget-row">
 			<td class="ilr-widget-cell"><?php echo esc_html( $data['username'] ); ?></td>
 			<td class="ilr-widget-cell"><?php echo esc_html( date( get_option( 'date_format' ), $data['timestamp'] ) . ' &ndash; ' . date( get_option( 'time_format' ), $data['timestamp'] ) ); ?></td>
-			<td class="ilr-widget-cell" style="text-align:center!important;"><?php echo esc_html( $data['attempt'] ); ?></td>
+			<td class="ilr-widget-cell num"><?php echo esc_html( $data['attempt'] ); ?></td>
 			<td class="ilr-widget-cell"><?php echo wp_kses_post( Invalid_Login_Redirect_Logging::ilr_get_table_badge( $data['type'], $data ) ); ?></td>
 		</tr>
 

@@ -456,7 +456,7 @@ class Invalid_Login_Redirect_Settings {
 
 			$sub_options = '';
 
-			if ( $addon_data['sub_options'] ) {
+			if ( isset( $addon_data['sub_options'] ) && is_array( $addon_data['sub_options'] ) ) {
 
 				$sub_options .= sprintf(
 					'<div class="sub-options %s">',
