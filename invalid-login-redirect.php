@@ -38,13 +38,17 @@ class Invalid_Login_Redirect {
 
 	public static $helpers;
 
+	public static $login_url;
+
 	public function __construct() {
 
 		require_once( plugin_dir_path( __FILE__ ) . '/constants.php' );
 
+		self::$login_url = apply_filters( 'ilr_login_url', site_url( 'wp-login.php' ) );
+
 		$this->options = get_option( 'invalid-login-redirect', [
 			'login_limit'       => 3,
-			'redirect_url'      => site_url( 'wp-login.php?action=lostpassword' ),
+			'redirect_url'      => site_url( self::$login_url . '?action=lostpassword' ),
 			'error_text'        => esc_html__( 'You have tried to login unsuccessfully 3 times. Have you forgotten your password?', 'invalid-login-redirect' ),
 			'error_text_border' => '#dc3232',
 			'addons'            => [],

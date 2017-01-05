@@ -66,7 +66,7 @@ final class Invalid_Login_Redirect_User_Role_Redirects extends Invalid_Login_Red
 
 					<?php
 					printf(
-						__( 'Specify a custom URL to redirect each user role to on your site. The "Invalid Login" field is where registered users will be redirected to after %s attempts lof ogging in with an invalid password. Leave the field blank to use the plugin defaults.', 'invalid-login-redirect' ),
+						__( 'Specify a custom URL to redirect each user role to on your site. The "Invalid Login" field is where registered users will be redirected to after %s attempts logging in with an invalid password. Leave the field blank to use the plugin defaults.', 'invalid-login-redirect' ),
 						'<strong>' . absint( $this->options['login_limit'] ) . '</strong>'
 					); ?>
 

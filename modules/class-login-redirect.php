@@ -170,7 +170,7 @@ final class Invalid_Login_Redirect_Redirection extends Invalid_Login_Redirect {
 	 */
 	public function build_redirect_url( $username = false ) {
 
-		if ( $username && site_url( 'wp-login.php?action=lostpassword' ) === $this->options['redirect_url'] ) {
+		if ( $username && site_url( parent::$login_url . '?action=lostpassword' ) === $this->options['redirect_url'] ) {
 
 			$query_args = apply_filters( 'ilr_redirect_query_args', [
 				$this->reset_user_key => $username,

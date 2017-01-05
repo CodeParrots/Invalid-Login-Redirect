@@ -257,7 +257,7 @@ class Invalid_Login_Redirect_Settings {
 
 		$new_input = [];
 
-		$new_input['redirect_url']      = ! empty( $input['redirect_url'] ) ? sanitize_url( $input['redirect_url'] ) : site_url( 'wp-login.php?action=lostpassword' );
+		$new_input['redirect_url']      = ! empty( $input['redirect_url'] ) ? esc_url_raw( $input['redirect_url'] ) : site_url( Invalid_Login_Redirect::$login_url . '?action=lostpassword' );
 		$new_input['login_limit']       = ! empty( $input['login_limit'] ) ? absint( $input['login_limit'] ) : $this->options['login_limit'];
 		$new_input['error_text']        = isset( $input['error_text'] ) ? trim( $input['error_text'] ) : $this->options['error_text'];
 		$new_input['error_text_border'] = isset( $input['error_text_border'] ) ? sanitize_text_field( $input['error_text_border'] ) : $this->options['error_text_border'];
@@ -346,7 +346,7 @@ class Invalid_Login_Redirect_Settings {
 	public function redirect_url_callback() {
 
 		printf(
-			'<input type="text" placeholder="' . site_url( 'wp-login.php?action=lostpassword' ) . '" class="widefat" id="redirect_url" name="invalid-login-redirect[redirect_url]" value="%1$s" /><p class="description">%2$s</p>',
+			'<input type="text" placeholder="' . site_url( Invalid_Login_Redirect::$login_url . '?action=lostpassword' ) . '" class="widefat" id="redirect_url" name="invalid-login-redirect[redirect_url]" value="%1$s" /><p class="description">%2$s</p>',
 			isset( $this->options['redirect_url'] ) ? esc_attr( $this->options['redirect_url'] ) : '',
 			sprintf( esc_html_x( 'Enter the URL of the page that users should be redirected to after %s attempts.', 'The login limit set on the options page.', 'invalid-login-redirect' ), $this->options['login_limit'] )
 		);
@@ -570,6 +570,10 @@ class Invalid_Login_Redirect_Settings {
 						'description' => __( 'This activates the dashboard widget so that users can easily see login attempts as soon as they enter the site.', 'invalid-login-redirect' ),
 					],
 				],
+			],
+			__( 'Change Login URL', 'invalid-login-redirect' ) => [
+				'file'        => 'class-change-login.php',
+				'description' => __( 'Alter the default WordPress login URL. Create a more memorable URL to make logging in hassle free.', 'invalid-login-redirect' ),
 			],
 			__( 'User Role Redirects', 'invalid-login-redirect' ) => [
 				'file'        => 'class-user-role-redirects.php',
