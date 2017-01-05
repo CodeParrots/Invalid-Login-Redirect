@@ -575,9 +575,13 @@ class Invalid_Login_Redirect_Settings {
 				'file'        => 'class-user-role-redirects.php',
 				'description' => __( 'Redirect specific user roles to certain areas of your site after a successful login.', 'invalid-login-redirect' ),
 			],
-			__( 'Email Notifications', 'invalid-login-redirect' ) => [
+			__( 'Notifications', 'invalid-login-redirect' ) => [
 				'file'        => 'class-notifications.php',
 				'description' => __( 'Display a notice to the admin users whenever a logged action occurs.', 'invalid-login-redirect' ),
+			],
+			__( 'Email Notifications', 'invalid-login-redirect' ) => [
+				'file'        => 'class-email-notification.php',
+				'description' => __( 'Emails the admin user whenever a login  occurs.', 'invalid-login-redirect' ),
 			],
 			__( 'Change Login URL', 'invalid-login-redirect' ) => [
 				'file'        => 'class-change-login.php',
