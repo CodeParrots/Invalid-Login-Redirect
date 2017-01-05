@@ -571,10 +571,6 @@ class Invalid_Login_Redirect_Settings {
 					],
 				],
 			],
-			__( 'Change Login URL', 'invalid-login-redirect' ) => [
-				'file'        => 'class-change-login.php',
-				'description' => __( 'Alter the default WordPress login URL. Create a more memorable URL to make logging in hassle free.', 'invalid-login-redirect' ),
-			],
 			__( 'User Role Redirects', 'invalid-login-redirect' ) => [
 				'file'        => 'class-user-role-redirects.php',
 				'description' => __( 'Redirect specific user roles to certain areas of your site after a successful login.', 'invalid-login-redirect' ),
@@ -582,6 +578,11 @@ class Invalid_Login_Redirect_Settings {
 			__( 'Notifications', 'invalid-login-redirect' ) => [
 				'file'        => 'class-notifications.php',
 				'description' => __( 'Display a notice to the admin users whenever a logged action occurs.', 'invalid-login-redirect' ),
+			],
+			__( 'Change Login URL', 'invalid-login-redirect' ) => [
+				'file'        => 'class-change-login.php',
+				'description' => __( 'Alter the default WordPress login URL. Create a more memorable URL to make logging in hassle free.', 'invalid-login-redirect' ),
+				'in_progress' => true,
 			],
 			__( 'Prevent Logins', 'invalid-login-redirect' ) => [
 				'file'        => 'class-prevent-logins.php',
