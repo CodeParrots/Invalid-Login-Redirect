@@ -4,6 +4,9 @@
  *
  * @author Code Parrots <support@codeparrots.com>
  *
+ * @note The original code for this class/module was borrowed from Rename wp-login.php
+ * @link https://wordpress.org/plugins/rename-wp-login/
+ *
  * @since 1.0.0
  */
 final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
@@ -24,11 +27,11 @@ final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
 
 		add_filter( 'ilr_sanitize_options',  [ $this, 'sanitize_options' ] );
 
-		add_action( 'admin_init', array( $this, 'admin_init' ) );
+		if ( 'wp-login.php' === $this->redirect_slug() ) {
 
-		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+			return;
 
-		add_action( 'network_admin_notices', array( $this, 'admin_notices' ) );
+		}
 
 		add_action( 'wp_loaded', array( $this, 'plugins_loaded' ), 1 );
 
@@ -110,7 +113,7 @@ final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
 				esc_attr( $this->class_slug ),
 				__( 'Login URL', 'invalid-login-redirect' ),
 				'<code>' . trailingslashit( home_url() ) . '</code>',
-				isset( $this->options['addons'][ $this->class_slug ]['options']['url'] ) ? esc_attr( $this->options['addons'][ $this->class_slug ]['options']['url'] ) : '',
+				esc_attr( $this->redirect_slug() ),
 				'wp-login.php'
 			);
 
@@ -137,15 +140,9 @@ final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
 
 		}
 
-		$input['addons'][ $this->class_slug ]['options']['url'] = isset( $input['addons'][ $this->class_slug ]['options']['url'] ) ? sanitize_text_field( $input['addons'][ $this->class_slug ]['options']['url'] ) : '';
+		$input['addons'][ $this->class_slug ]['options']['url'] = ( isset( $input['addons'][ $this->class_slug ]['options']['url'] ) && ! empty( $input['addons'][ $this->class_slug ]['options']['url'] ) ) ? sanitize_text_field( $input['addons'][ $this->class_slug ]['options']['url'] ) : 'wp-login.php';
 
 		return $input;
-
-	}
-
-	private function path() {
-
-		return trailingslashit( dirname( __FILE__ ) );
 
 	}
 
@@ -190,7 +187,7 @@ final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
 	private function new_login_slug() {
 
 		if (
-			( $slug = get_option( 'rwl_page' ) ) ||
+			( $slug = $this->redirect_slug() ) ||
 			( 'login' === $slug )
 		) {
 
@@ -206,130 +203,9 @@ final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
 
 	}
 
-	public function admin_init() {
-
-		global $pagenow;
-
-		add_settings_section(
-			'rename-wp-login-section',
-			_x( 'Rename wp-login.php', 'Text string for settings page', 'rename-wp-login' ),
-			array( $this, 'rwl_section_desc' ),
-			'permalink'
-		);
-
-		add_settings_field(
-			'rwl-page',
-			'<label for="rwl-page">' . __( 'Login url', 'rename-wp-login' ) . '</label>',
-			array( $this, 'rwl_page_input' ),
-			'permalink',
-			'rename-wp-login-section'
-		);
-
-		if ( isset( $_POST['rwl_page'] ) && $pagenow === 'options-permalink.php' ) {
-
-			if (
-				( $rwl_page = sanitize_title_with_dashes( $_POST['rwl_page'] ) ) &&
-				strpos( $rwl_page, 'wp-login' ) === false &&
-				! in_array( $rwl_page, $this->forbidden_slugs() )
-			) {
-
-				if ( is_multisite() && $rwl_page === get_site_option( 'rwl_page', 'login' ) ) {
-
-					delete_option( 'rwl_page' );
-
-				} else {
-
-					update_option( 'rwl_page', $rwl_page );
-
-				}
-
-			}
-
-		}
-
-		if ( get_option( 'rwl_redirect' ) ) {
-
-			delete_option( 'rwl_redirect' );
-
-			if ( is_multisite() && is_super_admin() ) {
-
-				$redirect = network_admin_url( 'settings.php#rwl-page-input' );
-
-			} else {
-
-				$redirect = admin_url( 'options-permalink.php#rwl-page-input' );
-
-			}
-
-			wp_safe_redirect( $redirect );
-
-			die;
-
-		}
-
-	}
-
-	public function rwl_section_desc() {
-
-		if ( is_multisite() && is_super_admin() ) {
-
-			echo (
-				'<p>' .
-					sprintf(
-						__( 'To set a networkwide default, go to %s.', 'rename-wp-login' ),
-						'<a href="' . esc_url( network_admin_url( 'settings.php#rwl-page-input' ) ) . '">' .
-							__( 'Network Settings', 'rename-wp-login' ) .
-						'</a>'
-					) .
-				'</p>'
-			);
-
-		}
-
-	}
-
-	public function rwl_page_input() {
-
-		if ( get_option( 'permalink_structure' ) ) {
-
-			echo '<code>' . trailingslashit( home_url() ) . '</code> <input id="rwl-page-input" type="text" name="rwl_page" value="' . $this->new_login_slug()  . '">' . ( $this->use_trailing_slashes() ? ' <code>/</code>' : '' );
-
-		} else {
-
-			echo '<code>' . trailingslashit( home_url() ) . '?</code> <input id="rwl-page-input" type="text" name="rwl_page" value="' . $this->new_login_slug()  . '">';
-
-		}
-
-	}
-
-	public function admin_notices() {
-
-		global $pagenow;
-
-		if ( ! is_network_admin() && $pagenow === 'options-permalink.php' && isset( $_GET['settings-updated'] ) ) {
-
-			echo '<div class="notice notice-success is-dismissible"><p>' . sprintf( __( 'Your login page is now here: %s. Bookmark this page!', 'rename-wp-login' ), '<strong><a href="' . $this->new_login_url() . '">' . $this->new_login_url() . '</a></strong>' ) . '</p></div>';
-
-		}
-
-	}
-
 	public function plugins_loaded() {
 
 		global $pagenow;
-
-		load_plugin_textdomain( 'rename-wp-login' );
-
-		if (
-			! is_multisite() && (
-				strpos( $_SERVER['REQUEST_URI'], 'wp-signup' ) !== false ||
-				strpos( $_SERVER['REQUEST_URI'], 'wp-activate' ) !== false
-			)
-		) {
-
-			wp_die( __( 'This feature is not enabled.', 'rename-wp-login' ), '', array( 'response' => 403 ) );
-
-		}
 
 		$request = parse_url( $_SERVER['REQUEST_URI'] );
 
@@ -346,12 +222,13 @@ final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
 
 			$pagenow = 'index.php';
 
-		} elseif (
+		}
 
+		if (
 			untrailingslashit( $request['path'] ) === home_url( $this->new_login_slug(), 'relative' ) || (
 				! get_option( 'permalink_structure' ) &&
-				isset( $_GET[$this->new_login_slug()] ) &&
-				empty( $_GET[$this->new_login_slug()] )
+				isset( $_GET[ $this->new_login_slug() ] ) &&
+				empty( $_GET[ $this->new_login_slug() ] )
 			)
 		) {
 
@@ -374,7 +251,7 @@ final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
 		$request = parse_url( $_SERVER['REQUEST_URI'] );
 
 		if (
-			$pagenow === 'wp-login.php' &&
+			'wp-login.php' === $pagenow &&
 			$this->user_trailingslashit( $request['path'] ) !== $this->user_trailingslashit( $request['path'] ) &&
 			get_option( 'permalink_structure' )
 		) {
@@ -383,7 +260,9 @@ final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
 
 			return;
 
-		} elseif ( $this->wp_login_php ) {
+		}
+
+		if ( $this->wp_login_php ) {
 
 			if (
 				( $referer = wp_get_referer() ) &&
@@ -406,13 +285,17 @@ final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
 
 					die;
 
-				}
+				} // @codingStandardsIgnoreLine
 
 			}
 
 			$this->wp_template_loader();
 
-		} elseif ( $pagenow === 'wp-login.php' ) {
+			return;
+
+		}
+
+		if ( 'wp-login.php' === $pagenow ) {
 
 			global $error, $interim_login, $action, $user_login;
 
@@ -430,33 +313,70 @@ final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
 
 	}
 
+	/**
+	 * Filter the site URL
+	 *
+	 * @param  string  $url     [description]
+	 * @param  string  $path    [description]
+	 * @param  string  $scheme  [description]
+	 * @param  integer $blog_id [description]
+	 *
+	 * @return string
+	 *
+	 * @since 1.0.0
+	 */
 	public function site_url( $url, $path, $scheme, $blog_id ) {
 
 		return $this->filter_wp_login_php( $url, $scheme );
 
 	}
 
+	/**
+	 * Filter the network site URL
+	 *
+	 * @param  string $url    [description]
+	 * @param  string $path   [description]
+	 * @param  string $scheme [description]
+	 *
+	 * @return string
+	 *
+	 * @since 1.0.0
+	 */
 	public function network_site_url( $url, $path, $scheme ) {
 
 		return $this->filter_wp_login_php( $url, $scheme );
 
 	}
 
+	/**
+	 * Filter the redirect location
+	 *
+	 * @param  string $location [description]
+	 * @param  string $status   [description]
+	 *
+	 * @return string
+	 *
+	 * @since 1.0.0
+	 */
 	public function wp_redirect( $location, $status ) {
 
 		return $this->filter_wp_login_php( $location );
 
 	}
 
-	public function filter_wp_login_php( $url, $scheme = null ) {
+	/**
+	 * Filter the login URL
+	 *
+	 * @param  string $url    [description]
+	 * @param  string $scheme [description]
+	 *
+	 * @return string
+	 */
+	public function filter_wp_login_php( $url, $scheme = false ) {
 
 		if ( strpos( $url, 'wp-login.php' ) !== false ) {
 
-			if ( is_ssl() ) {
-
-				$scheme = 'https';
-
-			}
+			$scheme = is_ssl() ? 'https' : 'http';
 
 			$args = explode( '?', $url );
 
@@ -470,7 +390,7 @@ final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
 
 				$url = $this->new_login_url( $scheme );
 
-			}
+			} // @codingStandardsIgnoreLine
 
 		}
 
@@ -478,17 +398,15 @@ final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
 
 	}
 
-	public function welcome_email( $value ) {
+	public function redirect_slug() {
 
-		return str_replace( 'wp-login.php', trailingslashit( get_site_option( 'rwl_page', 'login' ) ), $value );
+		return ( isset( $this->options['addons'][ $this->class_slug ]['options']['url'] ) && ! empty( $this->options['addons'][ $this->class_slug ]['options']['url'] ) ) ? sanitize_text_field( $this->options['addons'][ $this->class_slug ]['options']['url'] ) : 'wp-login.php';
 
 	}
 
-	public function forbidden_slugs() {
+	public function welcome_email( $value ) {
 
-		$wp = new WP;
-
-		return array_merge( $wp->public_query_vars, $wp->private_query_vars );
+		return str_replace( 'wp-login.php', trailingslashit( $this->redirect_slug() ), $value );
 
 	}
 
