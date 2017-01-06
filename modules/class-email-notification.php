@@ -1,6 +1,6 @@
 <?php
 /**
- * Change the /wp-login.php URL
+ * Send an email notification when a user logs in
  *
  * @author Code Parrots <support@codeparrots.com>
  *
@@ -18,17 +18,67 @@ final class Invalid_Login_Redirect_Email_Notification extends Invalid_Login_Redi
 
 	}
 
+	/**
+	 * Send the email notification
+	 *
+	 * @param  string $username    The username
+	 * @param  stdObj $user_object User object
+	 *
+	 * @return mixed
+	 */
 	public function ilr_email_notification( $username, $user_object ) {
 
-			$recipient = get_option( 'admin_email' );
+		$roles = parent::$helpers->get_ilr_user_role( $user_object );
 
-			$website = get_option( 'siteurl' );
+		if ( in_array( 'administrator', $roles ) && ! INVALID_LOGIN_REDIRECT_DEVELOPER ) {
 
-			$subject = $website . ' • Successful login: ' . $username;
+			return;
 
-			$message = 'A login attept was successfully made to ' . $website . ' by ' . $username . ' at ' . date( get_option( 'time_format' ), current_time( 'timestamp' ) ) . ' on ' . date( get_option( 'date_format' ), current_time( 'timestamp' ) ) . '.';
+		}
 
-			wp_mail( $recipient,  $subject , $message );
+		ob_start();
+
+		$this->get_email( 'basic' );
+
+		$email = ob_get_contents();
+
+		if ( ! $email ) {
+
+			return;
+
+		}
+
+		add_filter( 'wp_mail_content_type', function() {
+
+			return 'text/html';
+
+		} );
+
+		wp_mail(
+			get_option( 'admin_email' ),
+			__( 'Successul Login Detected',
+			'invalid-login-redirect' ),
+			$email
+		);
+
+	}
+
+	/**
+	 * Get the email type
+	 *
+	 * @param  string $type The type of email to generate
+	 *
+	 * @return mixed
+	 */
+	public function get_email( $type ) {
+
+		if ( ! file_exists( ILR_MODULES . "partials/emails/email-{$type}.php" ) ) {
+
+			return false;
+
+		}
+
+		include_once( ILR_MODULES . "partials/emails/email-{$type}.php" );
 
 	}
 
