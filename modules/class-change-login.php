@@ -27,7 +27,7 @@ final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
 
 		if ( 'wp-login.php' !== $this->redirect_slug() ) {
 
-			$this->custom_login_url();
+			$this->init_custom_login_url();
 
 		}
 
@@ -137,7 +137,7 @@ final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
 	 *
 	 * @since 1.0.0
 	 */
-	public function custom_login_url() {
+	public function init_custom_login_url() {
 
 		add_action( 'wp_loaded',                 [ $this, 'wp_loaded' ] );
 
