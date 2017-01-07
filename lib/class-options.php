@@ -469,7 +469,10 @@ class Invalid_Login_Redirect_Settings {
 
 					if ( isset( $this->options['addons'][ sanitize_title( $addon_name ) ]['options'] ) ) {
 
-						if ( $this->options['addons'][ sanitize_title( $addon_name ) ]['options'][ $option_data['id'] ] ) {
+						if (
+							isset( $this->options['addons'][ sanitize_title( $addon_name ) ]['options'][ $option_data['id'] ] ) &&
+							$this->options['addons'][ sanitize_title( $addon_name ) ]['options'][ $option_data['id'] ]
+						) {
 
 							$checked = 'checked="checked"';
 

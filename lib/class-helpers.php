@@ -104,6 +104,31 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 	}
 
 	/**
+	 * Return the users IP address
+	 *
+	 * @return string
+	 */
+	public function get_user_ip() {
+
+		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+
+			$ip = $_SERVER['HTTP_CLIENT_IP'];
+
+		} else if ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+
+			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+
+		} else {
+
+			$ip = $_SERVER['REMOTE_ADDR'];
+
+		}
+
+		return $ip;
+
+	}
+
+	/**
 	 * Get the user role(s)
 	 *
 	 * @param object $user User object

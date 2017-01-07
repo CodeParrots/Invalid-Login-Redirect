@@ -1,8 +1,23 @@
 jQuery( document ).ready( function() {
 
-	function send_popup( notification ) {
+	// Blocked entry via prevent login module
+	if ( null !== prevent_login ) {
 
-		console.log( notification );
+		jQuery.growl.notice( {
+			title:        prevent_login.title,
+			message:      prevent_login.text,
+			location:     'br',
+			size:         'small',
+			delayOnHover: true,
+			style:        'error',
+		} );
+
+	}
+
+	/**
+	 * (near) Real Time Notifications
+	 */
+	function send_popup( notification ) {
 
 		var title       = '' !== notification['title'] ? notification['title'] : '',
 		    text        = '' !== notification['ip_address'] ? notification['ip_address'] : 'The text is empty.',

@@ -20,7 +20,7 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 			'username'   => '',
 			'attempt'    => '-',
 			'timestamp'  => current_time( 'timestamp' ),
-			'ip_address' => $this->get_user_ip(),
+			'ip_address' => parent::$helpers->get_user_ip(),
 			'type'       => '',
 		];
 
@@ -204,31 +204,6 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 			do_action( 'ilr_log_update_meta', $post_id );
 
 		}
-
-	}
-
-	/**
-	 * Return the users IP address
-	 *
-	 * @return string
-	 */
-	public function get_user_ip() {
-
-		if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
-
-			$ip = $_SERVER['HTTP_CLIENT_IP'];
-
-		} else if ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-
-			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-
-		} else {
-
-			$ip = $_SERVER['REMOTE_ADDR'];
-
-		}
-
-		return $ip;
 
 	}
 

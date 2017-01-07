@@ -76,7 +76,7 @@ module.exports = function( grunt ) {
 		},
 
 		usebanner: {
-			taskName: {
+			css: {
 				options: {
 					position: 'top',
 					replace: true,
@@ -95,7 +95,27 @@ module.exports = function( grunt ) {
 						'lib/css/ilr-admin-rtl.min.css',
 						'lib/css/ilr-styles.min.css',
 						'lib/css/ilr-styles-rtl.min.css',
+						'modules/partials/css/ilr-notifications.min.css',
+					]
+				}
+			},
+			js: {
+				options: {
+					position: 'top',
+					replace: true,
+					banner: '/*\n'+
+						' * @Plugin <%= pkg.title %>\n' +
+						' * @Author <%= pkg.author %>\n'+
+						' * @Site <%= pkg.site %>\n'+
+						' * @Version <%= pkg.version %>\n' +
+						' * @Build <%= grunt.template.today("mm-dd-yyyy") %>\n'+
+						' */',
+					linebreak: true
+				},
+				files: {
+					src: [
 						'lib/js/ilr-admin.min.js',
+						'modules/partials/js/ilr-notifications.min.js',
 					]
 				}
 			}
@@ -105,7 +125,7 @@ module.exports = function( grunt ) {
 		watch: {
 			admin_css: { // admin css
 				files: [ 'lib/css/*.css', 'modules/partials/css/*.css' ],
-				tasks: [ 'cssjanus', 'cssmin', 'usebanner' ],
+				tasks: [ 'cssjanus', 'cssmin', 'usebanner:css' ],
 				options: {
 					spawn: false,
 					event: ['all']
@@ -113,7 +133,7 @@ module.exports = function( grunt ) {
 			},
 			admin_js: { // admin css
 				files: [ 'lib/js/*.js', 'modules/partials/js/*.js' ],
-				tasks: [ 'uglify', 'usebanner' ],
+				tasks: [ 'uglify', 'usebanner:js' ],
 				options: {
 					spawn: false,
 					event: ['all']
