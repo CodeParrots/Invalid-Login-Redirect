@@ -88,6 +88,8 @@ class Invalid_Login_Redirect {
 
 		new Invalid_Login_Redirect_Settings( $this->options );
 
+		require_once( plugin_dir_path( __FILE__ ) . '/lib/class-admin-notice.php' );
+
 		// Base module, invalid login redirects
 		include_once( ILR_MODULES . 'class-login-redirect.php' );
 

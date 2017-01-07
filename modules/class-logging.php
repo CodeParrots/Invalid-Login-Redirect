@@ -216,7 +216,7 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 	 */
 	public function get_log_option_notice() {
 
-		if ( ! parent::$helpers->is_option_enabled( 'logging' ) ) {
+		if ( ! parent::$helpers->is_addon_enabled( 'logging' ) ) {
 
 			return;
 

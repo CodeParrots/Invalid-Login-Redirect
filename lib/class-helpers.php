@@ -22,23 +22,52 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 	}
 
 	/**
-	 * Check if an option, or add-on, is enabled
+	 * Check if a specific add-on is enabled
 	 *
 	 * @return boolean
 	 *
 	 * @since 1.0.0
 	 */
-	public function is_option_enabled( $addon, $option = false ) {
+	public function is_addon_enabled( $addon = false ) {
 
-		$addon_name = sanitize_title( $addon );
+		if ( ! $addon ) {
 
-		if ( $addon && ! $option ) {
+			if ( INVALID_LOGIN_REDIRECT_DEVELOPER ) {
 
-			return isset( $this->options['addons'][ $addon_name ] );
+				new Invalid_Login_Redirect_Notice( 'Error: You forgot to specify an add-on name in <code>is_addon_enabled()</code>.', 'error' );
+
+				return;
+
+			} // @codingStandardsIgnoreLine
 
 		}
 
-		return ( isset( $this->options['addons'][ $addon_name ]['options'] ) && $this->options['addons'][ $addon_name ]['options'][ $option ] );
+		$addon_name = sanitize_title( $addon );
+
+		return ( isset( $this->options['addons'][ $addon_name ] ) && isset( $this->options['addons'][ $addon_name ]['options'][ $option ] ) );
+
+	}
+
+	/**
+	 * Check if an option for a specific addon is enabled
+	 *
+	 * @return boolean
+	 *
+	 * @since 1.0.0
+	 */
+	public function is_option_enabled( $addon = false, $option = false ) {
+
+		if ( ! $addon || ! $option ) {
+
+			new Invalid_Login_Redirect_Notice( 'Error: You forgot to specify an add-on or option name or  in <code>is_option_enabled()</code>.', 'error' );
+
+			return;
+
+		}
+
+		$addon_name = sanitize_title( $addon );
+
+		return ( isset( $this->options['addons'][ $addon_name ]['options'] ) && isset( $this->options['addons'][ $addon_name ]['options'][ $option ] ) );
 
 	}
 
