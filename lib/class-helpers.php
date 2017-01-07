@@ -32,13 +32,13 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 
 		if ( ! $addon ) {
 
-			if ( INVALID_LOGIN_REDIRECT_DEVELOPER ) {
-
-				new Invalid_Login_Redirect_Notice( 'Error: You forgot to specify an add-on name in <code>is_addon_enabled()</code>.', 'error' );
+			if ( ! INVALID_LOGIN_REDIRECT_DEVELOPER ) {
 
 				return;
 
 			} // @codingStandardsIgnoreLine
+
+			new Invalid_Login_Redirect_Notice( 'Error: You forgot to specify an add-on name in <code>is_addon_enabled()</code>.', 'error' );
 
 		}
 
@@ -58,6 +58,12 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 	public function is_option_enabled( $addon = false, $option = false ) {
 
 		if ( ! $addon || ! $option ) {
+
+			if ( ! INVALID_LOGIN_REDIRECT_DEVELOPER ) {
+
+				return;
+
+			} // @codingStandardsIgnoreLine
 
 			new Invalid_Login_Redirect_Notice( 'Error: You forgot to specify an add-on or option name or  in <code>is_option_enabled()</code>.', 'error' );
 
@@ -144,6 +150,22 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 		$args = wp_parse_args( $query_args, $default_args );
 
 		return new WP_Query( $args );
+
+	}
+
+	/**
+	 * Get entry data
+	 *
+	 * @param integer Entry ID to retreive
+	 * @param string  meta_key value to retreive
+	 *
+	 * @return object
+	 *
+	 * @since 1.0.0
+	 */
+	public function get_log_data( $log_id, $meta_key, $prefix = 'ilr_log_' ) {
+
+		return get_post_meta( $log_id, $prefix . $meta_key, true );
 
 	}
 

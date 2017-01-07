@@ -27,10 +27,11 @@ The text domain for the strings is `invalid-login-redirect`.
 - `ilr_invalid_login`
 - `ilr_handle_invalid_login`
 - `ilr_log_update_meta`
+- `ilr_before_options`
 
 #### Filters
 
-**Options** 
+**Options**
 
 Each option is individually filtered, allowing you to override them as needed.
 

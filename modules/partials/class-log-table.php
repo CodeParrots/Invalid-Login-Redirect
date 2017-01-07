@@ -45,7 +45,7 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 
 	function column_username( $item ) {
 
-		$user_obj = get_user_by( ( is_email( $item['username'] ) ? 'email' : 'login' ), $item['username'] );
+		$user_obj = $this->helpers->get_login_user_data( $item['username'] );
 
 		$actions = [];
 
@@ -59,7 +59,7 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 
 		}
 
-		$actions = apply_filters( 'ilr_username_column_actions', $actions );
+		$actions = apply_filters( 'ilr_username_column_actions', $actions, $item );
 
 		return sprintf(
 			'%1$s %2$s',

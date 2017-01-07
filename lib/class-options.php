@@ -25,6 +25,8 @@ class Invalid_Login_Redirect_Settings {
 
 		add_action( 'admin_init', [ $this, 'page_init' ] );
 
+		add_action( 'ilr_before_options', [ $this, 'options_notice' ] );
+
 	}
 
 
@@ -133,6 +135,8 @@ class Invalid_Login_Redirect_Settings {
 						settings_fields( 'ilr_options' );
 
 						$this->print_options_nav();
+
+						do_action( 'ilr_before_options' );
 
 						?>
 
@@ -245,6 +249,30 @@ class Invalid_Login_Redirect_Settings {
 	}
 
 	/**
+	 * Display the success/error messages
+	 *
+	 * @return mixed
+	 *
+	 * @since 1.0.0
+	 */
+	public function options_notice() {
+
+		$settings_updated = filter_input( INPUT_GET, 'settings-updated', FILTER_SANITIZE_STRING );
+
+		if ( $settings_updated ) {
+
+			printf(
+				'<div class="notice notice-success is-dismissible">
+					<p>%s</p>
+				</div>',
+				esc_html__( 'Settings saved.', 'invalid-login-redirect' )
+			);
+
+		}
+
+	}
+
+	/**
 	 * Sanitize each setting field as needed
 	 *
 	 * @param array $input Contains all settings fields as array keys
@@ -291,19 +319,6 @@ class Invalid_Login_Redirect_Settings {
 			__( 'General', 'invalid-login-redirect' ),
 			__( 'Add-Ons', 'invalid-login-redirect' ),
 		] );
-
-		$settings_updated = filter_input( INPUT_GET, 'settings-updated', FILTER_SANITIZE_STRING );
-
-		if ( $settings_updated ) {
-
-			printf(
-				'<div class="notice notice-success is-dismissible">
-					<p>%s</p>
-				</div>',
-				esc_html__( 'Settings saved.', 'invalid-login-redirect' )
-			);
-
-		}
 
 		?>
 
