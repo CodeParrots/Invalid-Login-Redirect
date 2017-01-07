@@ -147,6 +147,12 @@ final class Invalid_Login_Redirect_Prevent_Logins extends Invalid_Login_Redirect
 	 */
 	public function sanitize_options( $input ) {
 
+		if ( ! isset( $input['addons'][ $this->class_slug ]['options'] ) ) {
+
+			return $input;
+
+		}
+
 		foreach ( $input['addons'][ $this->class_slug ]['options'] as $option => $value ) {
 
 			if ( in_array( $option, [ 'blacklist', 'whitelist' ] ) ) {
