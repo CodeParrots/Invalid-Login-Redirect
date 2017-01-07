@@ -11,14 +11,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 }
 
-function check_username( $username ) {
-
-	$user = get_user_by('login', $username );
-
-	return username_exists( $username ) ? '<a href=' . get_site_url() . '/wp-admin/user-edit.php?user_id=' . $user->ID . '>' . $username . '</a>' : $username;
-
-}
-
 wp_enqueue_style( 'ilr-login-style', ILR_URL . '/lib/css/ilr-admin.css' );
 
 $logs = parent::$helpers->get_ilr_log( [
@@ -57,7 +49,7 @@ if ( $logs->have_posts() ) {
 		?>
 
 		<tr class="ilr-widget-row">
-			<td class="ilr-widget-cell"><?php echo check_username( esc_html( $data['username'] ) );?></td>
+			<td class="ilr-widget-cell"><?php echo esc_html( $data['username'] );?></td>
 			<td class="ilr-widget-cell"><?php echo esc_html( date( get_option( 'date_format' ), $data['timestamp'] ) . ' &ndash; ' . date( get_option( 'time_format' ), $data['timestamp'] ) ); ?></td>
 			<td class="ilr-widget-cell num"><?php echo esc_html( $data['attempt'] ); ?></td>
 			<td class="ilr-widget-cell"><?php echo wp_kses_post( Invalid_Login_Redirect_Logging::ilr_get_table_badge( $data['type'], $data ) ); ?></td>
