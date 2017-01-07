@@ -212,8 +212,8 @@ body.tools_page_invalid-login-redirect div.logging.add-on .badge,
 	}
 
 	body.tools_page_invalid-login-redirect div.logging.add-on .badge.invalid-password,
+	body.tools_page_invalid-login-redirect div.logging.add-on .badge.blocked-login,
 	.ilr-widget-cell .badge.invalid-password
-
 	 {
 		color: #a94442;
 		background: #f2dede;
@@ -228,7 +228,7 @@ body.tools_page_invalid-login-redirect div.logging.add-on .badge,
 	}
 
 	body.tools_page_invalid-login-redirect div.logging.add-on .badge.admin-username,
-	ilr-widget-cell.badge.admin-username {
+	.ilr-widget-cell.badge.admin-username {
 		color: #31708f;
 		background: #d9edf7;
 		border-color: #bce8f1;

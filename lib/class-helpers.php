@@ -78,14 +78,11 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 	 *
 	 * @since 1.0.0
 	 */
-	public function log_entry( $username, $user ) {
+	public function log_entry( $data ) {
 
 		$log_class = new Invalid_Login_Redirect_Logging( $this->options );
 
-		$log_class->log_attempt( [
-			'username' => $username,
-			'type'     => 'blocked-attempt'
-		] );
+		$log_class->log_attempt( $data );
 
 	}
 

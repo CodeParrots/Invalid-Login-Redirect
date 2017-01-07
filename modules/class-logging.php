@@ -357,11 +357,19 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 
 					break;
 
+				case 'blocked_login':
+
+					return [
+						'class'   => 'blocked-login',
+						'text'    => __( 'Blocked Login', 'invalid-login-redirect' ),
+					];
+
+					break;
+
 			} // @codingStandardsIgnoreLine
 
 		}, (array) $item['type'] );
 
-		//print_r($item_type);
 		foreach ( $item_type as $type ) {
 
 			$tooltip = isset( $type['tooltip'] ) ? sprintf(

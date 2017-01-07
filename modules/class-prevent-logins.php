@@ -25,8 +25,8 @@ final class Invalid_Login_Redirect_Prevent_Logins extends Invalid_Login_Redirect
 		add_action( 'ilr_options_section',   [ $this, 'option_section' ] );
 		add_filter( 'ilr_sanitize_options',  [ $this, 'sanitize_options' ] );
 
-		// add_action( 'wp_login',   [ $this, 'check_ip_address' ], 8, 2 );
-		// add_action( 'admin_init', [ $this, 'check_ip_address' ], 10, 2 );
+		add_action( 'wp_login',   [ $this, 'check_ip_address' ], 8, 2 );
+		add_action( 'admin_init', [ $this, 'check_ip_address' ], 10, 2 );
 
 		add_action( 'wp_enqueue_scripts', [ $this, 'load_notice_scripts' ] );
 
@@ -165,11 +165,22 @@ final class Invalid_Login_Redirect_Prevent_Logins extends Invalid_Login_Redirect
 	 */
 	public function check_ip_address( $username = false, $user = false ) {
 
+		if ( ! $username && ! $user ) {
+
+			$user = wp_get_current_user();
+
+			$username = ( ! $user ) ? __( 'Not Logged', 'invalid-login-redirect' ) : $user->user_login;
+
+		}
+
 		if ( in_array( self::$helpers->get_user_ip(), $this->prevent_login_option( 'blacklist', true ) ) ) {
 
 			if ( self::$helpers->is_addon_enabled( 'logging' ) ) {
 
-				self::$helpers->log_entry( $username, $user );
+				self::$helpers->log_entry( [
+					'username' => $username,
+					'type'     => 'blocked_login',
+				] );
 
 			}
 
