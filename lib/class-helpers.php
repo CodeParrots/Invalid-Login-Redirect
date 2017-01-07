@@ -44,7 +44,7 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 
 		$addon_name = sanitize_title( $addon );
 
-		return ( isset( $this->options['addons'][ $addon_name ] ) && isset( $this->options['addons'][ $addon_name ]['options'][ $option ] ) );
+		return isset( $this->options['addons'][ $addon_name ] );
 
 	}
 

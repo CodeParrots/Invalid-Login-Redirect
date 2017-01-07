@@ -25,8 +25,8 @@ final class Invalid_Login_Redirect_Prevent_Logins extends Invalid_Login_Redirect
 		add_action( 'ilr_options_section',   [ $this, 'option_section' ] );
 		add_filter( 'ilr_sanitize_options',  [ $this, 'sanitize_options' ] );
 
-		add_action( 'wp_login',   [ $this, 'check_ip_address' ], 8, 2 );
-		add_action( 'admin_init', [ $this, 'check_ip_address' ], 10, 2 );
+		// add_action( 'wp_login',   [ $this, 'check_ip_address' ], 8, 2 );
+		// add_action( 'admin_init', [ $this, 'check_ip_address' ], 10, 2 );
 
 		add_action( 'wp_enqueue_scripts', [ $this, 'load_notice_scripts' ] );
 
