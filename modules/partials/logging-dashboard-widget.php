@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 wp_enqueue_style( 'ilr-login-style', ILR_URL . '/lib/css/ilr-admin.css' );
 
 $logs = parent::$helpers->get_ilr_log( [
-	'posts_per_page' => 10,
+	'posts_per_page' => 5,
 ] );
 
 ob_start();
@@ -62,7 +62,6 @@ if ( $logs->have_posts() ) {
 	?>
 
 	</table>
-
 
 	<?php
 
