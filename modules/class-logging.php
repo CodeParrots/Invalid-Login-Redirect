@@ -292,7 +292,7 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 				__( 'Invalid Login Attempts', 'invalid-login-redirect' ) . '%s',
 				'<small style="float: right; margin-top: 2px;"><a href="' . admin_url( 'tools.php?page=invalid-login-redirect&tab=logging' ) . '">' . esc_html__( 'view full log', 'invalid-login-redirect' ) . '</a></small>'
 			),
-			[ $this, 'ilr_admin_Widget_content' ]
+			[ $this, 'ilr_admin_widget_content' ]
 		);
 
 	}
@@ -387,7 +387,7 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 	 *
 	 * @since 1.0.0
 	 */
-	public function ilr_admin_Widget_content() {
+	public function ilr_admin_widget_content() {
 
 		include_once( ILR_MODULES . 'partials/logging-dashboard-widget.php' );
 

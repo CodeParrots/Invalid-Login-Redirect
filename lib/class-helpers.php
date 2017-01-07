@@ -72,6 +72,24 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 	}
 
 	/**
+	 * Log entry into log
+	 *
+	 * @param stdObj $user User object
+	 *
+	 * @since 1.0.0
+	 */
+	public function log_entry( $username, $user ) {
+
+		$log_class = new Invalid_Login_Redirect_Logging( $this->options );
+
+		$log_class->log_attempt( [
+			'username' => $username,
+			'type'     => 'blocked-attempt'
+		] );
+
+	}
+
+	/**
 	 * Return a user object
 	 *
 	 * @param  string $username The username/email to retreive
