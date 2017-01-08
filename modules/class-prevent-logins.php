@@ -393,7 +393,8 @@ final class Invalid_Login_Redirect_Prevent_Logins extends Invalid_Login_Redirect
 		$blacklist_url = wp_nonce_url(
 			add_query_arg(
 				'blacklist_user',
-				$item['ID']
+				$item['ID'],
+				admin_url( 'tools.php?page=invalid-login-redirect&tab=logging' )
 			),
 			'blacklist_user_nonce',
 			'blacklist_user_' . (int) $item['ID'] . '_nonce'
@@ -407,9 +408,9 @@ final class Invalid_Login_Redirect_Prevent_Logins extends Invalid_Login_Redirect
 
 		}
 
-		$links['blacklist'] = $actions['view'] = sprintf(
+		$links['blacklist'] = sprintf(
 			'<small><a href="%1$s">%2$s</a></small>',
-			esc_attr( $blacklist_url ),
+			esc_url_raw( $blacklist_url ),
 			esc_html( $blacklist_text )
 		);
 
@@ -474,14 +475,14 @@ final class Invalid_Login_Redirect_Prevent_Logins extends Invalid_Login_Redirect
 
 			if ( $remove ) {
 
-				$notice_text = esc_html_x( '%1$s is now removed from the blacklist. (%2$s)', '1st: Username; 2nd: IP Address;', 'invalid-login-redirect' );
+				$notice_text = esc_html_x( '%1$s has been removed from the blacklist. (%2$s)', '1st: Username; 2nd: IP Address;', 'invalid-login-redirect' );
 
 			} else {
 
 				$this->options['addons']['prevent-logins']['options']['blacklist'][] = $ip_address;
 				update_option( 'invalid-login-redirect', $this->options );
 
-				$notice_text = esc_html_x( '%1$s is now removed from the blacklist. (%2$s)', '1st: Username; 2nd: IP Address;', 'invalid-login-redirect' );
+				$notice_text = esc_html_x( '%1$s has been added to the blacklist. (%2$s)', '1st: Username; 2nd: IP Address;', 'invalid-login-redirect' );
 
 			}
 

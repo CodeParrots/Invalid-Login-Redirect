@@ -57,6 +57,22 @@ class Invalid_Login_Redirect_Log_Table extends WP_List_Table {
 				esc_html__( 'View User', 'invalid-login-redirect' )
 			);
 
+			$delete_nonce = wp_nonce_url(
+				add_query_arg(
+					'delete_log_entry',
+					$item['ID'],
+					admin_url( 'tools.php?page=invalid-login-redirect&tab=logging' )
+				),
+				'delete_log_entry_nonce',
+				'delete_log_entry_' . (int) $item['ID'] . '_nonce'
+			);
+
+			$actions['delete'] = sprintf(
+				'<small><a href="' . esc_url_raw( $delete_nonce ) . '">%2$s</a></small>',
+				absint( $item['ID'] ),
+				esc_html__( 'Delete Log Entry', 'invalid-login-redirect' )
+			);
+
 		}
 
 		$actions = apply_filters( 'ilr_username_column_actions', $actions, $item );

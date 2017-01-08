@@ -11,6 +11,22 @@ body.tools_page_invalid-login-redirect div#wpcontent {
 		padding-right: 15px;
 	}
 
+	body.tools_page_invalid-login-redirect div#wpcontent .wrap ::-webkit-input-placeholder {
+   color: red;
+	}
+
+	:-moz-placeholder { /* Firefox 18- */
+	   color: red;
+	}
+
+	::-moz-placeholder {  /* Firefox 19+ */
+	   color: red;
+	}
+
+	:-ms-input-placeholder {
+	   color: red;
+	}
+
 .ilr-banner {
 	background: #fff;
 	width: 100%;

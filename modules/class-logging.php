@@ -26,6 +26,8 @@ final class Invalid_Login_Redirect_Logging extends Invalid_Login_Redirect {
 
 		include_once( ILR_PATH . 'lib/partials/ilr-log-cpt.php' );
 
+		include_once( ILR_MODULES . 'partials/class-log-table-processing.php' );
+
 		add_filter( 'ilr_options_nav_items',    [ $this, 'option_nav_item' ] );
 
 		add_action( 'ilr_options_section',      [ $this, 'option_section' ] );
