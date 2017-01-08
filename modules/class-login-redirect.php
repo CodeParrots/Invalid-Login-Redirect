@@ -118,7 +118,7 @@ final class Invalid_Login_Redirect_Redirection extends Invalid_Login_Redirect {
 	 */
 	public function ilr_login_styles() {
 
-		if ( ! isset( $_GET[ $this->reset_user_key ] ) ) {
+		if ( ! filter_input( INPUT_GET, $this->reset_user_key ) ) {
 
 			return;
 

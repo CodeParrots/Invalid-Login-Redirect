@@ -81,23 +81,17 @@ final class Invalid_Login_Redirect_Change_Login extends Invalid_Login_Redirect {
 
 			<?php
 
-			printf(
-				'<div class="col ilr-notice">
+			$fields = [
+				$this->class_slug => [
+					'label'       => __( 'Login URL', 'invalid-login-redirect' ),
+					'name'        => 'url',
+					'value'       => $this->redirect_slug(),
+					'before'      => '<code>' . trailingslashit( home_url() ) . '</code>',
+					'placeholder' => 'wp-login.php',
+				],
+			];
 
-					<div class="fields">
-
-						<label for="invalid-login-redirect[addons][%1$s][options][url]">%2$s</label>
-						%3$s<input type="text" id="invalid-login-redirect[addons][%1$s][options][url]" name="invalid-login-redirect[addons][%1$s][options][url]" class="login-url" value="%4$s" placeholder="%5$s" />
-
-					</div>
-
-				</div>',
-				esc_attr( $this->class_slug ),
-				__( 'Login URL', 'invalid-login-redirect' ),
-				'<code>' . trailingslashit( home_url() ) . '</code>',
-				esc_attr( $this->redirect_slug() ),
-				'wp-login.php'
-			);
+			parent::$helpers->ilr_option_markup( $fields );
 
 			submit_button( esc_html__( 'Save Settings', 'invalid-login-redirect' ) );
 

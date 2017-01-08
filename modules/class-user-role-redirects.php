@@ -12,6 +12,8 @@ final class Invalid_Login_Redirect_User_Role_Redirects extends Invalid_Login_Red
 
 	private $options;
 
+	private $class_slug = 'user-role-redirects';
+
 	public function __construct( $options ) {
 
 		$this->options = $options;
@@ -39,7 +41,7 @@ final class Invalid_Login_Redirect_User_Role_Redirects extends Invalid_Login_Red
 	 */
 	public function option_nav_item( $nav_items ) {
 
-		$nav_items[] = __( 'Role Redirects', 'invalid-login-redirect' );
+		$nav_items[] = __( 'User Role Redirects', 'invalid-login-redirect' );
 
 		return $nav_items;
 
@@ -58,7 +60,7 @@ final class Invalid_Login_Redirect_User_Role_Redirects extends Invalid_Login_Red
 
 		?>
 
-		<div class="role-redirects add-on <?php if ( ( $tab && 'role-redirects' !== $tab ) || ! $tab ) { echo 'hidden'; } ?>">
+		<div class="<?php echo esc_attr( $this->class_slug ); ?> add-on <?php if ( ( $tab && $this->class_slug !== $tab ) || ! $tab ) { echo 'hidden'; } ?>">
 
 			<div class="ilr-notice col">
 
@@ -78,9 +80,39 @@ final class Invalid_Login_Redirect_User_Role_Redirects extends Invalid_Login_Red
 
 			$roles = $this->get_site_roles();
 
+			$fields = [
+				$this->class_slug => [],
+			];
+
+			$first = key( array_slice( $roles, 1, 1 ) );
+
 			foreach ( $roles as $role => $role_data ) {
 
-				$this->get_field_markup( $role, $role_data, key( array_slice( $roles, 1, 1 ) ) );
+				$apply_to_all = ( $first === $role ) ? '<a href="#" class="apply-to-all">' . __( 'Apply to All Below', 'invalid-login-redirect' ) . '</a>' : '';
+
+				$fields = [
+					$this->class_slug => [
+						'title'  => ucwords( $role_data['name'] ) . $apply_to_all,
+						'fields' => [
+							[
+								'label'       => sprintf( __( '%s Successful Login', 'invalid-login-redirect' ), '<span class="dashicons dashicons-yes"></span>' ),
+								'name'        => "invalid-login-redirect[addons][{$this->class_slug}][options][{$role}][valid-login]",
+								'value'       => isset( $this->options['addons'][ $this->class_slug ]['options'][ $role ]['valid-login'] ) ? $this->options['addons'][ $this->class_slug ]['options'][ $role ]['valid-login'] : '',
+								'placeholder' => site_url( 'wp-login.php', 'login' ),
+								'class'       => 'valid-login widefat',
+							],
+							[
+								'label'       => sprintf( __( '%s Invalid Login', 'invalid-login-redirect' ), '<span class="dashicons dashicons-no-alt"></span>' ),
+								'name'        => "invalid-login-redirect[addons][user-role-redirects][options][{$role}][invalid-login]",
+								'value'       => isset( $this->options['addons'][ $this->class_slug ]['options'][ $role ]['invalid-login'] ) ? $this->options['addons'][ $this->class_slug ]['options'][ $role ]['invalid-login'] : '',
+								'placeholder' => site_url( 'wp-login.php', 'login' ),
+								'class'       => 'invalid-login widefat',
+							],
+						],
+					],
+				];
+
+				parent::$helpers->ilr_option_markup( $fields );
 
 			}
 
@@ -101,17 +133,17 @@ final class Invalid_Login_Redirect_User_Role_Redirects extends Invalid_Login_Red
 	 */
 	public function sanitize_options( $input ) {
 
-		if ( ! isset( $input['addons']['user-role-redirects']['options'] ) ) {
+		if ( ! isset( $input['addons'][ $this->class_slug ]['options'] ) ) {
 
 			return $input;
 
 		}
 
-		foreach ( $input['addons']['user-role-redirects']['options'] as $role => $redirects ) {
+		foreach ( $input['addons'][ $this->class_slug ]['options'] as $role => $redirects ) {
 
 			if ( empty( $redirects['invalid-login'] ) && empty( $redirects['valid-login'] ) ) {
 
-				unset( $input['addons']['user-role-redirects']['options'][ $role ] );
+				unset( $input['addons'][ $this->class_slug ]['options'][ $role ] );
 
 			} // @codingStandardsIgnoreLine
 
@@ -183,13 +215,13 @@ final class Invalid_Login_Redirect_User_Role_Redirects extends Invalid_Login_Red
 
 		foreach ( $roles as $role ) {
 
-			if ( ! isset( $this->options['addons']['user-role-redirects']['options'][ $role ][ $type ] ) ) {
+			if ( ! isset( $this->options['addons'][ $this->class_slug ]['options'][ $role ][ $type ] ) ) {
 
 				return;
 
 			}
 
-			wp_redirect( $this->options['addons']['user-role-redirects']['options'][ $role ][ $type ] );
+			wp_redirect( $this->options['addons'][ $this->class_slug ]['options'][ $role ][ $type ] );
 
 			exit;
 
@@ -213,45 +245,6 @@ final class Invalid_Login_Redirect_User_Role_Redirects extends Invalid_Login_Red
 		$editable_roles = apply_filters( 'editable_roles', $all_roles );
 
 		return $editable_roles;
-
-	}
-
-	/**
-	 * Generate the field markup for the redirect inputs
-	 *
-	 * @param  string $role      User role
-	 * @param  object $role_data User role data
-	 * @param  string $first     First item in the roles array (string).
-	 *
-	 * @return mixed
-	 *
-	 * @since 1.0.0
-	 */
-	private function get_field_markup( $role, $role_data, $first ) {
-
-		return printf(
-			'<div class="col ilr-notice %3$s">
-				%1$s %2$s
-				<div class="fields">
-
-					<label for="invalid-login-redirect[addons][user-role-redirects][options][%3$s][valid-login]">%7$s</label>
-					<input type="text" id="invalid-login-redirect[addons][user-role-redirects][options][%3$s][valid-login]" name="invalid-login-redirect[addons][user-role-redirects][options][%3$s][valid-login]" class="widefat invalid-login" value="%8$s" placeholder="%9$s" />
-
-					<label for="invalid-login-redirect[addons][user-role-redirects][options][%3$s][invalid-login]">%4$s</label>
-					<input type="text" id="invalid-login-redirect[addons][user-role-redirects][options][%3$s][invalid-login]" name="invalid-login-redirect[addons][user-role-redirects][options][%3$s][invalid-login]" class="widefat valid-login" value="%5$s" placeholder="%6$s" />
-
-				</div>
-			</div>',
-			ucwords( $role_data['name'] ),
-			( $first === $role ) ? '<a href="#" class="apply-to-all">' . __( 'Apply to All Below', 'invalid-login-redirect' ) . '</a>' : '',
-			sanitize_title( $role ),
-			sprintf( __( '%s Invalid Login', 'invalid-login-redirect' ), '<span class="dashicons dashicons-no-alt"></span>' ),
-			isset( $this->options['addons']['user-role-redirects']['options'][ $role ]['invalid-login'] ) ? esc_url( $this->options['addons']['user-role-redirects']['options'][ $role ]['invalid-login'] ) : '',
-			esc_attr( $this->options['redirect_url'] ),
-			sprintf( __( '%s Successful Login', 'invalid-login-redirect' ), '<span class="dashicons dashicons-yes"></span>' ),
-			isset( $this->options['addons']['user-role-redirects']['options'][ $role ]['valid-login'] ) ? esc_url( $this->options['addons']['user-role-redirects']['options'][ $role ]['valid-login'] ) : '',
-			esc_attr( admin_url() )
-		);
 
 	}
 

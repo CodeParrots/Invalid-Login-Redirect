@@ -90,6 +90,36 @@ final class Invalid_Login_Redirect_Prevent_Logins extends Invalid_Login_Redirect
 
 			<?php
 
+			/**
+			Note: In the process of building out the options field API
+			**/
+			/*
+			$fields = [
+				$this->class_slug => [
+					'label'       => __( 'Blacklist', 'invalid-login-redirect' ),
+					'name'        => "invalid-login-redirect[addons][{$this->class_slug}][options][blacklist]",
+					'name'        => 'blacklist',
+					'value'       => $this->prevent_login_option( 'blacklist' ),
+					'placeholder' => '192.168.1.*',
+					'class'       => 'widefat',
+					'callback'    => 'ilr_textarea',
+					'array_value' => true,
+				],
+				[
+					'label'       => __( 'Whitelist', 'invalid-login-redirect' ),
+					'name'        => "invalid-login-redirect[addons][{$this->class_slug}][options][whitelist]",
+					'name'        => 'whitelist',
+					'value'       => $this->prevent_login_option( 'whitelist' ),
+					'placeholder' => '192.168.1.*',
+					'class'       => 'widefat',
+					'callback'    => 'ilr_textarea',
+					'array_value' => true,
+				],
+			];
+
+			parent::$helpers->ilr_option_markup( $fields );
+			*/
+
 			printf(
 				'<div class="col ilr-notice">
 

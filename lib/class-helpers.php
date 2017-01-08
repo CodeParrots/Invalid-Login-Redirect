@@ -15,9 +15,24 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 	 */
 	private $options;
 
+	private $option_field_defaults;
+
 	public function __construct( $options ) {
 
 		$this->options = $options;
+
+		$this->option_field_defaults = [
+			'type'        => 'text',
+			'label'       => '',
+			'name'        => '',
+			'value'       => '',
+			'array_value' => false,
+			'before'      => '',
+			'after'       => '',
+			'placeholder' => '',
+			'class'       => '',
+			'callback'    => '',
+		];
 
 	}
 
@@ -208,6 +223,156 @@ final class ILR_Helpers extends Invalid_Login_Redirect {
 		$user = $user ? new WP_User( $user ) : wp_get_current_user();
 
 		return $user->roles ? $user->roles : false;
+
+	}
+
+	/**
+	 * Generate the markup for the option field
+	 *
+	 * @return mixed
+	 *
+	 * @since 1.0.0
+	 */
+	public function ilr_option_markup( $fields ) {
+
+		if ( ! $fields || empty( $fields ) ) {
+
+			return;
+
+		}
+
+		if ( isset( $fields[ key( $fields ) ]['fields'] ) ) {
+
+			$x = 0;
+
+			foreach ( $fields[ key( $fields ) ]['fields'] as $field ) {
+
+				$fields[ key( $fields ) ]['fields'][ $x ] = wp_parse_args( $fields[ key( $fields ) ]['fields'][ $x ], $this->option_field_defaults );
+
+				$x++;
+
+			} // @codingStandardsIgnoreLine
+
+		} else {
+
+			$fields[ key( $fields ) ] = wp_parse_args( $fields[ key( $fields ) ], $this->option_field_defaults );
+
+		}
+
+		if ( ! empty( $fields[ key( $fields ) ]['callback'] ) ) {
+
+			$callback = $fields[ key( $fields ) ]['callback'];
+
+			if ( is_callable( [ $this, $callback ] ) ) {
+
+				$this->$callback( $fields );
+
+				return;
+
+			} // @codingStandardsIgnoreLine
+
+		}
+
+		$this->render_text_field( $fields );
+
+	}
+
+	/**
+	 * Render standard text field
+	 *
+	 * @param  array  $fields     Field data array
+	 * @param  bool   $sub_option Is a nested option
+	 * @param  string $title      The title of the option
+	 *
+	 * @return mixed
+	 *
+	 * @since 1.0.0
+	 */
+	private function render_text_field( $fields, $sub_option = false, $title = '' ) {
+
+		if ( isset( $fields[ key( $fields ) ]['fields'] ) ) {
+
+			printf(
+				'<div class="col ilr-notice">%s<div class="fields">',
+				esc_html( $title )
+			);
+
+			$x = 1;
+
+			foreach ( $fields[ key( $fields ) ]['fields'] as $field ) {
+
+				echo ( 1 === $x ) ? wp_kses_post( $fields[ key( $fields ) ]['title'] ) : '';
+
+				$this->render_text_field( [ key( $fields ) => $field ], true, $fields[ key( $fields ) ]['title'] );
+
+				$x++;
+
+			} // @codingStandardsIgnoreLine
+
+			print( '</div></div>' );
+
+			return;
+
+		}
+
+		if ( ! $sub_option ) {
+
+			print( '<div class="col ilr-notice"><div class="fields">' );
+
+		}
+
+		foreach ( $fields as $module_slug => $data ) {
+
+			$data          = wp_parse_args( $data, $this->option_field_defaults );
+			$data['value'] = isset( $data['value'] ) ? $data['value'] : ( ( isset( $this->options['addons'][ $module_slug ]['options'][ $data['name'] ] ) && ! empty( $this->options['addons'][ $module_slug ]['options'][ $data['name'] ] ) ) ? sanitize_text_field( $this->options['addons'][ $module_slug ]['options'][ $data['name'] ] ) : '' );
+			$field_name    = isset( $data['name'] ) ? $data['name'] : "invalid-login-redirect[addons][{$module_slug}][options][{$data['name']}]";
+
+			printf(
+				'<label for="%1$s">%2$s</label>
+				%3$s<input type="%4$s" id="%1$s" name="%1$s" class="%5$s" value="%6$s" placeholder="%7$s" />',
+				esc_attr( $field_name ),
+				wp_kses_post( $data['label'] ),
+				wp_kses_post( $data['before'] ),
+				esc_attr( $data['type'] ),
+				! empty( $data['class'] ) ? $data['class'] : sanitize_title( $data['name'] ),
+				esc_attr( $data['value'] ),
+				esc_attr( $data['placeholder'] )
+			);
+
+		}
+
+		if ( ! $sub_option ) {
+
+			print( '</div></div>' );
+
+		}
+
+	}
+
+	private function ilr_textarea( $fields ) {
+
+		foreach ( $fields[ key( $fields ) ] as $module_slug => $field ) {
+
+			$value = isset( $field['value'] ) ? $field['value'] : ( ( isset( $this->options['addons'][ $module_slug ]['options'][ $field['name'] ] ) && ! empty( $this->options['addons'][ $module_slug ]['options'][ $field['name'] ] ) ) ? sanitize_text_field( $this->options['addons'][ $module_slug ]['options'][ $field['name'] ] ) : ( ( $field['array_value'] ) ? [] : '' ) );
+
+			print( '<div class="col ilr-notice"><div class="fields">' );
+
+			printf(
+				'<label for="%1$s">%2$s</label>
+				%3$s<textarea id="%1$s" class="%4$s" placeholder="%5$s">%6$s</textarea>',
+				esc_attr( "invalid-login-redirect[addons][{$module_slug}][options][{$field['name']}]" ),
+				wp_kses_post( $field['label'] ),
+				wp_kses_post( $field['before'] ),
+				! empty( $field['class'] ) ? $field['class'] : sanitize_title( $field['name'] ),
+				esc_attr( $field['placeholder'] ),
+				esc_attr( $field['value'] )
+			);
+
+			print( '</div></div>' );
+
+		}
+
+		print( '<h2>Testing</h2>' );
 
 	}
 
